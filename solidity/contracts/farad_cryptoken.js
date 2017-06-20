@@ -6,14 +6,16 @@
 //
 pragma solidity ^0.4.11;
 
-contract FaradCryptToken {
+import './IOwner.sol';
+
+contract FaradCryptToken is IOwner {
 
     string public name;             // the token name
     string public symbol;           // the token symbol
     uint8 public dscimals;          // set up to 8 decimals
 
     // the public registers
-    address public minter;          // the minter address for this contract
+    uint public totalSupply;        // the total supply
     uint public initialSupply;      // the initial supply of FRD
 
     // manufcturing related.
@@ -71,6 +73,7 @@ contract FaradCryptToken {
     event Withdraw(address _user, uint volume);
 
     function FaradCryptToken(
+        address _centralMinter,     // the central minter
         uint _preICOTime,           // the pre-ICO time
         uint _salesTime,            // the sales time
         uint _initialSupply,        // the initialSupply
@@ -78,8 +81,8 @@ contract FaradCryptToken {
     
         name = "Farad Cryptoken";
         symbol = "FRD";
-        minter = msg.sender;        // the gatekeeper
-        balances[minter] = _initialSupply;  // give to minter all tokens
+        if (_centralMinter != 0) owner = _centralMinter;
+        balances[owner] = _initialSupply;  // give to minter all tokens
 
         contractVolume = _contractVolume;
         productionVolume = 0;       // no producion yet, until the proceeds
