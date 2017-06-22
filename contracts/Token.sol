@@ -14,6 +14,7 @@ contract Token is Owner, Operations {
 
     // mapping of our users to balance
     mapping(address => uint256) public balanceOf;
+    mapping (address => mapping (address => uint256)) public allowance;
 
     // make sure the address is not null
     modifier isValidAddress(address _addr) { require(_addr != 0x0); _; }
@@ -59,13 +60,13 @@ contract Token is Owner, Operations {
         isValidAddress(_to)
         returns (bool success) {
 
-        // sanity check
-        require(msg.sender != _to && _value > 0);
+        // // sanity check
+        // require(msg.sender != _to && _value > 0);
 
-        // check for overflows
-        if (balanceOf[msg.sender] < _value || 
-            balanceOf[_to] + _value < balanceOf[_to])
-            throw;
+        // // check for overflows
+        // if (balanceOf[msg.sender] < _value || 
+        //     balanceOf[_to] + _value < balanceOf[_to])
+        //     throw;
 
         // 
         balanceOf[msg.sender] = subtract(balanceOf[msg.sender], _value);
@@ -83,15 +84,16 @@ contract Token is Owner, Operations {
         isValidAddress(_from)
         returns (bool success) {
     
-        // sanity check
-        require(_from != _to && _value > 0);
+        // // sanity check
+        // require(_from != _to && _value > 0);
 
-        // check for overflows
-        if (balanceOf[_from] < _value || 
-            balanceOf[_to] + _value < balanceOf[_to])
-            throw;
+        // // check for overflows
+        // if (balanceOf[_from] < _value || 
+        //     balanceOf[_to] + _value < balanceOf[_to])
+        //     throw;
 
         // update public balance
+        allowance[_from][msg.sender] = subtract(allowance[_from][msg.sender], _value);
         balanceOf[_from] = subtract(balanceOf[_from], _value);
         balanceOf[_to] = add(balanceOf[_to], _value);
 
@@ -100,8 +102,26 @@ contract Token is Owner, Operations {
         return true;
     }
 
-    // function claim(uint256 _value) {
+    /**
+     * This method is explained further in https://goo.gl/iaqxBa on the
+     * possible attacks. As such, we have to make sure the value is
+     * drained, before any Alice/Bob can approve each other to
+     * transfer on their behalf.
+     * @param _spender  - the recipient of the value
+     * @param _value    - the value allowed to be spent 
+     */
+    /// Approve `_spender` to claim/spend `_value`?
+    function approve(address _spender, uint256 _value) public 
+        isValidAddress(_spender) 
+        returns (bool success) {
 
-    // }
+        // if the allowance isn't 0, it can only be updated to 0 to prevent 
+        // an allowance change immediately after withdrawal
+        require(_value == 0 || allowance[msg.sender][_spender] == 0);
+
+        allowance[msg.sender][_spender] = _value;
+        ApprovedTransfer(msg.sender, _spender, _value);
+        return true;
+    }
 
 }

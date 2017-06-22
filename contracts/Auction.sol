@@ -17,15 +17,14 @@ contract Auction {
     function Auction(
         uint256 _startTime, 
         uint256 _endTime,
-        uint256 _supply,
-        address _beneficiary) {
+        uint256 _supply) {
         // some checks
         assert(_endTime > _startTime);
 
         startTime = _startTime;
         endTime = _endTime;
         supply = _supply;
-        beneficiary = _beneficiary;
+        beneficiary = msg.sender;
     }
 
 }
