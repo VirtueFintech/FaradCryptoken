@@ -1,16 +1,14 @@
 
 pragma solidity ^0.4.11;
 
-import './Owner.sol';
-
-contract OwnerImpl is Owner {
+contract Owner {
     address public owner;       // current owner
     address public newOwner;    // new owner
 
     event NewOwner(address _prevOwner, address _newOwner);
 
     // constructor
-    function OwnerImpl() {
+    function Owner() {
         owner = msg.sender;     // set the sender as the owner
     }
 
