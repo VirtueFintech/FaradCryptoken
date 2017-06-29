@@ -9,11 +9,10 @@ contract FRDCryptoken is Token {
     string public symbol = 'FRD';             // the token symbol
     uint8 public decimals = 8;              // the number of decimals
 
-    // our constructor
-    function FRDCryptoken(uint256 _totalSupply)
-        Token(name, symbol, decimals, _totalSupply) 
-    {
+    // our constructor, just supply the total supply.
+    function FRDCryptoken(
+        uint256 _totalSupply
+    ) Token(name, symbol, decimals, _totalSupply) {
     }
 
 }
-
