@@ -21,7 +21,7 @@ contract Token is Owner, Operations {
 
     // event to emit
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
-    event ApprovedTransfer(address indexed _from, address indexed _to, uint256 _value);
+    event Approval(address indexed _from, address indexed _to, uint256 _value);
 
     // our constructor. We have fixed everything above, and not as 
     // parameters in the constructor.
@@ -52,16 +52,21 @@ contract Token is Owner, Operations {
     }
 
     // get token balance
-    function balanceOf(address _owner) public constant 
-            returns (uint256 balance) {
+    function balanceOf(address _owner) 
+        public constant 
+        returns (uint256 balance) {
         return balanceOf[_owner];
     }    
 
-    // make transfer
+    /**
+     * make a transfer. This can be called from the token holder.
+     * e.g. Token holder Alice, can issue somethign like this to Bob
+     *      Alice.transfer(Bob, 200);     // to transfer 200 to Bob
+     */
     /// Initiate a transfer to `_to` with value `_value`?
-    function transfer(address _to, uint256 _value) public
+    function transfer(address _to, uint256 _value) 
+        public
         isValidAddress(_to)
-        isOwner()
         returns (bool success) {
 
         // sanity check
@@ -81,22 +86,35 @@ contract Token is Owner, Operations {
         return true;
     }
 
-    // make an approved transfer to another account from vault
+    /**
+     * make an approved transfer to another account from vault. This operation
+     * should be called after approved operation below.
+     * .e.g Alice allow Bob to spend 30 by doing:
+     *      Alice.approve(Bob, 30);                 // allow 30 to Bob
+     *
+     * and Bob can claim, say 10, from that by doing
+     *      Bob.transferFrom(Alice, Bob, 10);       // spend only 10
+     * and Bob's balance shall be 20 in the allowance.
+     */
     /// Initiate a transfer of `_value` from `_from` to `_to`
-    function transferFrom(address _from, address _to, uint256 _value) public
-        isValidAddress(_to)
+    function transferFrom(address _from, address _to, uint256 _value) 
+        public
         isValidAddress(_from)
+        isValidAddress(_to)
         returns (bool success) {
     
         // sanity check
         require(_from != _to);
 
         // check for overflows
-        if (balanceOf[_from] < _value || 
+        if (_value < 0 ||
+            balanceOf[_from] < _value || 
+            allowance[_from][msg.sender] < _value ||
             balanceOf[_to] + _value < balanceOf[_to])
             throw;
 
         // update public balance
+        allowance[_from][msg.sender] = subtract(allowance[_from][msg.sender], _value);        
         balanceOf[_from] = subtract(balanceOf[_from], _value);
         balanceOf[_to] = add(balanceOf[_to], _value);
 
@@ -112,20 +130,38 @@ contract Token is Owner, Operations {
      * transfer on their behalf.
      * @param _spender  - the recipient of the value
      * @param _value    - the value allowed to be spent 
+     *
+     * This can be called by the token holder
+     * e.g. Alice can allow Bob to spend 30 on her behalf
+     *      Alice.approve(Bob, 30);     // gives 30 to Bob.
      */
     /// Approve `_spender` to claim/spend `_value`?
-    function approve(address _spender, uint256 _value) public 
+    function approve(address _spender, uint256 _value) 
+        public 
         isValidAddress(_spender)
-        isOwner()
         returns (bool success) {
 
         // if the allowance isn't 0, it can only be updated to 0 to prevent 
         // an allowance change immediately after withdrawal
-        require(_value == 0 || allowance[msg.sender][_spender] == 0);
+        require(allowance[msg.sender][_spender] == 0);
 
         allowance[msg.sender][_spender] = _value;
-        ApprovedTransfer(msg.sender, _spender, _value);
+        Approval(msg.sender, _spender, _value);
         return true;
+    }
+
+    /**
+     * Check the allowance that has been approved previously by owner.
+     */
+    /// check allowance approved from `_owner` to `_spender`?
+    function allowance(address _owner, address _spender) 
+        public constant 
+        isValidAddress(_owner)
+        isValidAddress(_spender)
+        returns (uint remaining) {
+
+        // constant op. Just return the balance.
+        return allowance[_owner][_spender];
     }
 
 }
