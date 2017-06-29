@@ -39,7 +39,6 @@ contract Token is Owner, Operations {
 
         // set the balance of initiator to supply
         balanceOf[tx.origin] = totalSupply;
-        Transfer(msg.sender, tx.origin, totalSupply);
     }
 
     // some getter functions
@@ -98,7 +97,6 @@ contract Token is Owner, Operations {
             throw;
 
         // update public balance
-        allowance[_from][msg.sender] = subtract(allowance[_from][msg.sender], _value);
         balanceOf[_from] = subtract(balanceOf[_from], _value);
         balanceOf[_to] = add(balanceOf[_to], _value);
 

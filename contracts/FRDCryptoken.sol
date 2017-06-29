@@ -5,8 +5,8 @@ import './Token.sol';
 
 contract FRDCryptoken is Token {
 
-    string public name = 'FRD';             // the token name
-    string public symbol = 'ƒ';             // the token symbol
+    string public name = 'FARAD';             // the token name
+    string public symbol = 'FRD';             // the token symbol
     uint8 public decimals = 8;              // the number of decimals
 
     // our constructor
