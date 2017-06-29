@@ -1,6 +1,5 @@
 
-SOL_DIR=./contracts
-BUILD_DIR=builds
+BUILD_DIR=build
 
 .PHONY: build
 
