@@ -6,7 +6,7 @@ import './Operations.sol';
 
 contract Token is Owner, Operations {
 
-    string public standard = 'FaradCryptoken 0.1.1';
+    string public standard = 'Cryptoken 0.1.1';
     string public name = '';            // the token name
     string public symbol = '';          // the token symbol
     uint8 public decimals = 0;          // the number of decimals
@@ -36,6 +36,10 @@ contract Token is Owner, Operations {
         symbol = _symbol;
         decimals = _decimals;
         totalSupply = _totalSupply;
+
+        // set the balance of initiator to supply
+        balanceOf[tx.origin] = totalSupply;
+        Transfer(msg.sender, tx.origin, totalSupply);
     }
 
     // some getter functions
@@ -58,15 +62,16 @@ contract Token is Owner, Operations {
     /// Initiate a transfer to `_to` with value `_value`?
     function transfer(address _to, uint256 _value) public
         isValidAddress(_to)
+        isOwner()
         returns (bool success) {
 
-        // // sanity check
-        // require(msg.sender != _to && _value > 0);
+        // sanity check
+        require(msg.sender != _to);
 
-        // // check for overflows
-        // if (balanceOf[msg.sender] < _value || 
-        //     balanceOf[_to] + _value < balanceOf[_to])
-        //     throw;
+        // check for overflows
+        if (balanceOf[msg.sender] < _value || 
+            balanceOf[_to] + _value < balanceOf[_to])
+            throw;
 
         // 
         balanceOf[msg.sender] = subtract(balanceOf[msg.sender], _value);
@@ -84,13 +89,13 @@ contract Token is Owner, Operations {
         isValidAddress(_from)
         returns (bool success) {
     
-        // // sanity check
-        // require(_from != _to && _value > 0);
+        // sanity check
+        require(_from != _to);
 
-        // // check for overflows
-        // if (balanceOf[_from] < _value || 
-        //     balanceOf[_to] + _value < balanceOf[_to])
-        //     throw;
+        // check for overflows
+        if (balanceOf[_from] < _value || 
+            balanceOf[_to] + _value < balanceOf[_to])
+            throw;
 
         // update public balance
         allowance[_from][msg.sender] = subtract(allowance[_from][msg.sender], _value);
@@ -112,7 +117,8 @@ contract Token is Owner, Operations {
      */
     /// Approve `_spender` to claim/spend `_value`?
     function approve(address _spender, uint256 _value) public 
-        isValidAddress(_spender) 
+        isValidAddress(_spender)
+        isOwner()
         returns (bool success) {
 
         // if the allowance isn't 0, it can only be updated to 0 to prevent 

@@ -17,4 +17,6 @@ contract Sink is Operations {
         // where should this money go?
         sinkingFunds[msg.sender] = add(sinkingFunds[msg.sender], msg.value);
     }
+
+    // only admin can issue transfer
 }
