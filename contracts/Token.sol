@@ -13,8 +13,8 @@ contract Token is Owner, Operations {
     uint256 public totalSupply = 0;     // the total supply in this allocation
 
     // mapping of our users to balance
-    mapping(address => uint256) public balanceOf;
-    mapping (address => mapping (address => uint256)) public allowance;
+    mapping(address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
     // make sure the address is not null
     modifier isValidAddress(address _addr) { require(_addr != 0x0); _; }
@@ -38,7 +38,7 @@ contract Token is Owner, Operations {
         totalSupply = _totalSupply;
 
         // set the balance of initiator to supply
-        balanceOf[tx.origin] = totalSupply;
+        balances[tx.origin] = totalSupply;
     }
 
     // some getter functions
@@ -55,7 +55,7 @@ contract Token is Owner, Operations {
     function balanceOf(address _owner) 
         public constant 
         returns (uint256 balance) {
-        return balanceOf[_owner];
+        return balances[_owner];
     }    
 
     /**
@@ -73,13 +73,13 @@ contract Token is Owner, Operations {
         require(msg.sender != _to);
 
         // check for overflows
-        if (balanceOf[msg.sender] < _value || 
-            balanceOf[_to] + _value < balanceOf[_to])
+        if (balances[msg.sender] < _value || 
+            balances[_to] + _value < balances[_to])
             throw;
 
         // 
-        balanceOf[msg.sender] = subtract(balanceOf[msg.sender], _value);
-        balanceOf[_to] = add(balanceOf[_to], _value);
+        balances[msg.sender] = subtract(balances[msg.sender], _value);
+        balances[_to] = add(balances[_to], _value);
         
         // emit transfer event
         Transfer(msg.sender, _to, _value);
@@ -108,15 +108,15 @@ contract Token is Owner, Operations {
 
         // check for overflows
         if (_value < 0 ||
-            balanceOf[_from] < _value || 
-            allowance[_from][msg.sender] < _value ||
-            balanceOf[_to] + _value < balanceOf[_to])
+            balances[_from] < _value || 
+            allowed[_from][msg.sender] < _value ||
+            balances[_to] + _value < balances[_to])
             throw;
 
         // update public balance
-        allowance[_from][msg.sender] = subtract(allowance[_from][msg.sender], _value);        
-        balanceOf[_from] = subtract(balanceOf[_from], _value);
-        balanceOf[_to] = add(balanceOf[_to], _value);
+        allowed[_from][msg.sender] = subtract(allowed[_from][msg.sender], _value);        
+        balances[_from] = subtract(balances[_from], _value);
+        balances[_to] = add(balances[_to], _value);
 
         // emit transfer event
         Transfer(_from, _to, _value);
@@ -143,9 +143,9 @@ contract Token is Owner, Operations {
 
         // if the allowance isn't 0, it can only be updated to 0 to prevent 
         // an allowance change immediately after withdrawal
-        require(allowance[msg.sender][_spender] == 0);
+        require(allowed[msg.sender][_spender] == 0);
 
-        allowance[msg.sender][_spender] = _value;
+        allowed[msg.sender][_spender] = _value;
         Approval(msg.sender, _spender, _value);
         return true;
     }
@@ -161,7 +161,7 @@ contract Token is Owner, Operations {
         returns (uint remaining) {
 
         // constant op. Just return the balance.
-        return allowance[_owner][_spender];
+        return allowed[_owner][_spender];
     }
 
 }
