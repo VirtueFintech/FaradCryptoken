@@ -2,12 +2,14 @@
 var Token = artifacts.require('./Token.sol');
 
 contract('Token', function(accounts) {
-  it('shall put 10m for creator', function() {
+
+  it('shall put 100m for creator', function() {
     var expected = 100000000; // 100m
+    var owner = accounts[0];
 
     return Token.new('Farad', 'FRD', 8, expected).then(function(instance) {
-      return instance.balanceOf.call(accounts[0]);
-    }).then( function(balance) {
+      return instance.balanceOf.call(owner);
+    }).then(function(balance) {
       assert.equal(balance.valueOf(), expected, "100m wasn't in the first account");
     });
   });
@@ -36,7 +38,6 @@ contract('Token', function(accounts) {
 
     return Token.new('Farad', 'FRD', 8, expected).then(function(instance) {
       token = instance;
-
       // get balance first. should be 100m
       return token.balanceOf.call(owner);
     }).then(function(balance) {
@@ -45,8 +46,10 @@ contract('Token', function(accounts) {
       assert.equal(actual, expected, 'Expected 100m balance');
     }).then(function() {
       // make a transfer
-      token.transfer(dev1, 1000);
-
+      return token.transfer(dev1, 1000, {from: owner});
+    }).then(function(result) {
+      // ok, transfer is successful!      
+      console.log('transfer result:', result);
       // get the balance
       return token.balanceOf.call(dev1);
     }).then(function(dev1_bal) {
@@ -61,7 +64,9 @@ contract('Token', function(accounts) {
       var bal = expected - 1000;
       var actual = m_bal.toNumber();      
       assert.equal(actual, bal, 'Expected to be 1000 less from 100m');
-    })
+    }).catch(function(e) {
+      console.log('error: ', e);
+    });
   });
 
   it('shall allow transfer from acc0 to dev1', function() {
@@ -74,8 +79,9 @@ contract('Token', function(accounts) {
       token = instance;
 
       // make a transfer
-      token.transferFrom(owner, dev1, 1000);
-    }).then(function() {
+      return token.transferFrom(owner, dev1, 1000);
+    }).then(function(result) {
+      console.log('transfer result:', result);
       // check the balance for dev1
       return token.balanceOf.call(dev1);
     }).then(function(dev1_bal) {

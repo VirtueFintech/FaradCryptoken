@@ -20,8 +20,8 @@ contract Token is Owner, Operations {
     modifier isValidAddress(address _addr) { require(_addr != 0x0); _; }
 
     // event to emit
-    event Transfer(address _from, address _to, uint256 _value);
-    event ApprovedTransfer(address _from, address _to, uint256 _value);
+    event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    event ApprovedTransfer(address indexed _from, address indexed _to, uint256 _value);
 
     // our constructor. We have fixed everything above, and not as 
     // parameters in the constructor.

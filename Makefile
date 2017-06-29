@@ -2,7 +2,7 @@
 SOL_DIR=./contracts
 BUILD_DIR=builds
 
-PHONY: build
+.PHONY: build
 
 build:
 	truffle compile
@@ -10,7 +10,7 @@ build:
 migrate:
 	trufle migrate
 
-test:
+test: test/*.js
 	truffle test
 
 clean:
