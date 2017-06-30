@@ -1,10 +1,17 @@
 
 pragma solidity ^0.4.11;
 
-import './Owner.sol';
 import './Operations.sol';
 
-contract Token is Owner, Operations {
+/**
+ * Token is a generic ERC20 Token implementation. The totalSupply is not set
+ * in the constructor, and has to be initiated by the implementor/child of this
+ * object.
+ *
+ * Further control like Owner can be added to enforced ownership transfer in the
+ * derived object.
+ */
+contract Token is Operations {
 
     string public standard = 'Cryptoken 0.1.1';
     string public name = '';            // the token name
@@ -28,27 +35,21 @@ contract Token is Owner, Operations {
     function Token(
         string _name, 
         string _symbol,
-        uint8 _decimals,        
-        uint256 _totalSupply) isOwner {
+        uint8 _decimals) isOwner {
 
-        require(_totalSupply > 0);
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
-        totalSupply = _totalSupply;
-
-        // set the balance of initiator to supply
-        balances[tx.origin] = totalSupply;
     }
 
     // some getter functions
-    function name() public constant returns (string name) { name; }
-    function symbol() public constant returns (string symbol) { symbol; }
-    function decimals() public constant returns (uint8 decimals) { decimals; }
+    function name() public constant returns (string name) { return name; }
+    function symbol() public constant returns (string symbol) { return symbol; }
+    function decimals() public constant returns (uint8 decimals) { return decimals; }
 
     // the attributes of the token
     function totalSupply() public constant returns (uint256 totalSupply) { 
-        totalSupply; 
+        return totalSupply; 
     }
 
     // get token balance
