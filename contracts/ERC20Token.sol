@@ -68,15 +68,15 @@ contract ERC20Token is ERC20, Operations {
         decimals = _decimals;
     }
 
-    // some getter functions
-    function name() public constant returns (string name) { return name; }
-    function symbol() public constant returns (string symbol) { return symbol; }
-    function decimals() public constant returns (uint8 decimals) { return decimals; }
+    // // some getter functions
+    // function name() public constant returns (string name) { return name; }
+    // function symbol() public constant returns (string symbol) { return symbol; }
+    // function decimals() public constant returns (uint8 decimals) { return decimals; }
 
-    // the attributes of the token
-    function totalSupply() public constant returns (uint256 totalSupply) { 
-        return totalSupply; 
-    }
+    // // the attributes of the token
+    // function totalSupply() public constant returns (uint256 totalSupply) { 
+    //     return totalSupply; 
+    // }
 
     // get token balance
     function balanceOf(address _owner) 
@@ -97,7 +97,7 @@ contract ERC20Token is ERC20, Operations {
         returns (bool success) {
 
         // sanity check
-        require(msg.sender != _to);
+        require(_to != address(this));
 
         // check for overflows
         if (balances[msg.sender] < _value || 
@@ -131,7 +131,7 @@ contract ERC20Token is ERC20, Operations {
         returns (bool success) {
     
         // sanity check
-        require(_from != _to);
+        require(_from != _to && _to != address(this));
 
         // check for overflows
         if (_value < 0 ||
@@ -168,6 +168,9 @@ contract ERC20Token is ERC20, Operations {
         isValidAddress(_spender)
         returns (bool success) {
 
+        // sanity check
+        require(_spender != address(this));            
+
         // if the allowance isn't 0, it can only be updated to 0 to prevent 
         // an allowance change immediately after withdrawal
         require(allowed[msg.sender][_spender] == 0);
@@ -186,6 +189,9 @@ contract ERC20Token is ERC20, Operations {
         isValidAddress(_owner)
         isValidAddress(_spender)
         returns (uint remaining) {
+
+        // sanity check
+        require(_owner != _spender && _spender != address(this));            
 
         // constant op. Just return the balance.
         return allowed[_owner][_spender];
