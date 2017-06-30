@@ -1,7 +1,6 @@
-
 pragma solidity ^0.4.11;
 
-import './Token.sol';
+import './ERC20Token.sol';
 
 /**
  * FRDCryptoken is the main contract that will be published, including the
@@ -10,7 +9,7 @@ import './Token.sol';
  * on the escrow balance whenever the cryptoyalty is paid from the manufacturer.
  *
  */
-contract FRDCryptoken is Token {
+contract FRDCryptoken is ERC20Token {
 
     string public name = 'FARAD';       // the token name
     string public symbol = 'FRD';       // the token symbol
@@ -18,10 +17,10 @@ contract FRDCryptoken is Token {
 
     // our constructor, just supply the total supply.
     function FRDCryptoken(uint256 _totalSupply) 
-        Token(name, symbol, decimals) 
+        ERC20Token(name, symbol, decimals) 
     {
         totalSupply = _totalSupply;
-        balance[msg.sender] = _totalSupply;
+        balances[msg.sender] = _totalSupply;
     }
 
 }
