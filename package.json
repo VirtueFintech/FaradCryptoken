@@ -1,0 +1,39 @@
+{
+  "name": "FaradCryptoken",
+  "author": "Hisham Ismail <1ofdafew@gmail.com>",
+  "organization": "Virtue Fintech FZCO, Dubai",
+  "version": "1.0.1",
+  "engines": {
+    "npm": "^5.0.4"
+  },
+  "dependencies": {
+    "truffle": "^3.3.0"
+  },
+  "description": "Farad Cryptoken Program on Ethereum Blockchain implementing ERC20 interface",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/1ofdafew/FaradCryptoken.git"
+  },
+  "keywords": [
+    "ERC20",
+    "FARAD",
+    "FRD",
+    "UltraCapacitor",
+    "UCC",
+    "Virtue Fintech",
+    "Cryptoken"
+  ],
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/1ofdafew/FaradCryptoken/issues"
+  },
+  "homepage": "https://github.com/1ofdafew/FaradCryptoken#readme"
+}
