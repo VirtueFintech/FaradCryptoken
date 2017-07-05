@@ -28,15 +28,54 @@
 /* eslint-disable prefer-reflect */
 
 const FRDCrowdSale = artifacts.require('./FRDCrowdSale.sol');
+const FRDToken = artifacts.require('./FRDToken.sol');
+const Utils = require('./Utils');
+
+let token;
+let tokenAddress;
+
+let startTime = Math.floor(Date.now() / 1000) + 30*24*60*60;          // crowdsale hasn't started
+let startTimeInProgress = Math.floor(Date.now() / 1000) - 12*60*60;   // ongoing crowdsale
+let startTimeFinished = Math.floor(Date.now() / 1000) - 30*24*60*60;  // ongoing crowdsale
+let duration = 30*24*60*60;
+
+let etherCap = 1000000 * 1e+18; // 1m Ether
+let beneficiary = '0xe4b19fe91de2732717d77fa5e01e062fff56b4fa';
+
+async function end(time) { return startTime + duration }
+
+async function prepareCrowdsale(time) {
+  console.log('Preparing CrowdSale...');
+  return await FRDCrowdSale.new(tokenAddress, time, beneficiary);
+}
 
 contract('FRDCrowdSale', (accounts) => {
 
-  const ETHER_CAP = 500000 * 1 ether;   // cap of 500k
+  before(async () => {
+    console.log('Preparing new FRD...');
+    let token = await FRDToken.new();
+    tokenAddress = token.address;
+  });
 
-  it('shall have a cap of 500,000 Ether', async () => {
-    let sale = await FRDCrowdSale.new(now + 1 days, now + 31 days, ETHER_CAP, accounts[0]);
-    let cap = await sale.totalEtherCap();
-    assert.equal(cap, ETHER_CAP, 'should be 500k');
+  it('shall prepare the crowdsale environment', async () => {
+    let sale = await prepareCrowdsale(startTime);
+    let token = await sale.token.call();  // get the token address
+
+    console.log('Testing sale and token...');
+    assert.equal(token, tokenAddress, 'token address should be the same');
+
+    let start = await sale.startTime.call();
+    assert.equal(start.toNumber(), startTime);
+
+    let endTime = await sale.endTime.call();
+    let duration = await sale.DURATION.call();
+    assert.equal(endTime.toNumber(), startTime + duration.toNumber());
+
+    let beneficiaryAddress = await sale.beneficiary.call();
+    assert.equal(beneficiary, beneficiaryAddress);
+
+    let cap = await sale.totalEtherCap.call();
+    assert.equal(cap.toNumber(), etherCap);
   });
 
 });
