@@ -46,10 +46,15 @@ async function end(time) { return startTime + duration }
 
 async function prepareCrowdsale(time) {
   console.log('Preparing CrowdSale...');
-  return await FRDCrowdSale.new(tokenAddress, time, beneficiary);
+  return await FRDCrowdSale.new(tokenAddress, time, etherCap, beneficiary);
 }
 
 contract('FRDCrowdSale', (accounts) => {
+
+  // some of the accounts
+  let owner = accounts[0];
+  let dev1 = accounts[1];
+  let dev2 = accounts[2];
 
   before(async () => {
     console.log('Preparing new FRD...');
@@ -76,6 +81,51 @@ contract('FRDCrowdSale', (accounts) => {
 
     let cap = await sale.totalEtherCap.call();
     assert.equal(cap.toNumber(), etherCap);
+  });
+
+  it('shall not throw', async () => {
+    try {
+      let sale = await FRDCrowdSale.new(tokenAddress, startTime, etherCap, beneficiary);
+      assert(true, 'should not throw');
+    } catch(e) {
+      return Utils.ensureException(e);
+    }
+  });
+
+  it('shall throw for invalid token address', async () => {
+    try {
+      let sale = await FRDCrowdSale.new('0x0', startTime, etherCap, beneficiary);
+      assert(false, 'should throw');
+    } catch(e) {
+      return Utils.ensureException(e);
+    }
+  });
+
+  it('shall throw for invalid begin time', async () => {
+    try {
+      let sale = await FRDCrowdSale.new(tokenAddress, startTimeInProgress, etherCap, beneficiary);
+      assert(false, 'should throw');
+    } catch(e) {
+      return Utils.ensureException(e);
+    }
+  });
+  
+  it('shall throw for invalid ether cap', async () => {
+    try {
+      let sale = await FRDCrowdSale.new(tokenAddress, startTime, 0, beneficiary);
+      assert(false, 'should throw');
+    } catch(e) {
+      return Utils.ensureException(e);
+    }
+  });
+
+  it('shall throw for invalid beneficiary address', async () => {
+    try {
+      let sale = await FRDCrowdSale.new(tokenAddress, startTime, etherCap, '0x0');
+      assert(false, 'should throw');
+    } catch(e) {
+      return Utils.ensureException(e);
+    }
   });
 
 });
