@@ -51,18 +51,17 @@ contract FRDCrowdSale is Guarded, Owned, Computable {
     function FRDCrowdSale(
         address _token,                 // the FRD token address
         uint256 _startTime, 
-        uint256 _endTime, 
-        uint256 _totalEtherCap,
+        // uint256 _totalEtherCap,
         address _beneficiary)           // the beneficiary contract address
 
-        isBefore(_startTime)            // current time should be earlier than the start time
-        isValidAmount(_totalEtherCap)   // total cap must be > 0
+        // isBefore(_endTime)              // current time should be earlier than the start time
+        // isValidAmount(_totalEtherCap)   // total cap must be > 0
         isValidAddress(_beneficiary)    // beneficiary address not null 
     {
         token = FRDToken(_token);       // set the FRDToken address
         startTime = _startTime;
-        endTime = _endTime;
-        totalEtherCap = _totalEtherCap;
+        endTime = startTime + DURATION;
+        // totalEtherCap = _totalEtherCap;
         beneficiary = _beneficiary;
     }
 
@@ -82,7 +81,11 @@ contract FRDCrowdSale is Guarded, Owned, Computable {
         uint256 tokenAmount = computeReturn(msg.value);
         totalEtherContributed = add(totalEtherContributed, msg.value);
 
-        // issue the FRD token to the user 
+        // issue the FRD token to the user
+        //  we can use:
+        // 1) transfer - which transfer directly
+        // 2) approve - where user has to pull
+        token.approve(msg.sender, tokenAmount);
 
         // notify event for this contribution
         Contribution(msg.sender, msg.value, tokenAmount);
