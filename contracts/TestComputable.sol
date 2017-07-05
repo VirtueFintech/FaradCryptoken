@@ -25,15 +25,15 @@
  */
 pragma solidity ^0.4.11;
 
-import './Operations.sol';
+import './Computable.sol';
 
 /**
  * TestOperations is a derived contract for Operations with
  * public access functions to make it testables.
  */
-contract TestOperations is Operations {
+contract TestComputable is Computable {
 
-    function TestOperations() {}
+    function TestComputable() {}
 
     function testAdd(uint256 _x, uint256 _y) public returns (uint256) {
         return super.add(_x, _y);

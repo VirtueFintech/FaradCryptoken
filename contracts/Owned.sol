@@ -25,27 +25,41 @@
  */
 pragma solidity ^0.4.11;
 
-import './ERC20Token.sol';
+import './Ownable.sol';
+import './Guarded.sol';
 
-/**
- * FRDCryptoken is the main contract that will be published, including the
- * manufacturing paramters that need to be pushed/published to the blockchain
- * for traceability in the manufaturing process, as well as real-time updates
- * on the escrow balance whenever the cryptoyalty is paid from the manufacturer.
- *
- */
-contract FRDCryptoken is ERC20Token {
+contract Owned is Ownable, Guarded {
 
-    string public name = 'FARAD';       // the token name
-    string public symbol = 'FRD';       // the token symbol
-    uint8 public decimals = 12;         // the number of decimals
-
-    // our constructor, just supply the total supply.
-    function FRDCryptoken(uint256 _totalSupply) 
-        ERC20Token(name, symbol, decimals) 
-    {
-        totalSupply = _totalSupply;
-        balances[msg.sender] = _totalSupply;
+    // modifier for isOwner
+    modifier isOwner(address _owner) { 
+        assert(_owner == owner); 
+        _; 
     }
 
+    // constructor
+    function Owned() {
+        owner = msg.sender;     // set the sender as the owner
+    }
+
+    // implement the interfaces
+    function transferOwnership(address _newOwner) 
+        isOwner(msg.sender) 
+        public 
+    {
+        require(_newOwner != owner);
+        newOwner = _newOwner;
+    }
+
+    // accept as the new owner
+    function acceptOwnership() public {
+        require(msg.sender == newOwner);
+        
+        // notify an event of a new owner
+        NewOwner(owner, newOwner);
+
+        // set the new owner, with address 0x0
+        owner = newOwner;
+        newOwner = 0x0;
+    }
 }
+

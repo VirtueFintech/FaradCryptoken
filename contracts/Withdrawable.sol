@@ -25,17 +25,14 @@
  */
 pragma solidity ^0.4.11;
 
-import './ICO.sol';
+import './Guarded.sol';
+import './ERC20.sol';
 
-contract SoftSaleICO is ICO {
+contract Withdrawable is Guarded {
 
-    function SoftSaleICO(
-        uint256 _startTime, 
-        uint256 _endTime,
-        uint256 _supply)
-        ICO(_startTime, _endTime, _supply) {
-
-    }
-    
+    /// @notice withdraw from `_token` for `_value` to `_to`
+    /// @param _token the ERC20 compatible token 
+    /// @param _to the address to be sent from this contract
+    /// @param _value the value to be transferred from this contract
+    function withdraw(ERC20 _token, address _to, uint256 _value) public;
 }
-

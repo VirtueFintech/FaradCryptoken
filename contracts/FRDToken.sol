@@ -25,15 +25,26 @@
  */
 pragma solidity ^0.4.11;
 
-import './ICO.sol';
-import './FRDCryptoken.sol';
+import './ERC20Token.sol';
+// import './Administerable.sol';
 
-contract PreICO is ICO, FRDCryptoken {
+/**
+ * FRDCryptoken is the main contract that will be published, including the
+ * manufacturing paramters that need to be pushed/published to the blockchain
+ * for traceability in the manufaturing process, as well as real-time updates
+ * on the escrow balance whenever the cryptoyalty is paid from the manufacturer.
+ *
+ */
+contract FRDToken is ERC20Token {
 
-    function PreICO(uint256 _startTime, uint256 _endTime, uint256 _supply)
-        ICO(_startTime, _endTime, _supply) 
-        FRDCryptoken(_supply)
+    uint256 public SUPPLY = 135000000;      // 135m supply
+
+    // our constructor, just supply the total supply.
+    function FRDToken() 
+        ERC20Token('FARAD', 'FRD', 18) 
     {
+        totalSupply = SUPPLY;
+        balances[msg.sender] = SUPPLY;
     }
-}
 
+}

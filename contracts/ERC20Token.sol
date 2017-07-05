@@ -25,8 +25,9 @@
  */
 pragma solidity ^0.4.11;
 
-import './Operations.sol';
 import './ERC20.sol';
+import './Guarded.sol';
+import './Computable.sol';
 
 /**
  * Token is a generic ERC20 Token implementation. The totalSupply is not set
@@ -36,52 +37,35 @@ import './ERC20.sol';
  * Further control like Owner can be added to enforce ownership transfer in the
  * derived contract.
  */
-contract ERC20Token is ERC20, Operations {
+contract ERC20Token is ERC20, Guarded, Computable {
 
     string public standard = 'Cryptoken 0.1.1';
 
     string public name = '';            // the token name
     string public symbol = '';          // the token symbol
     uint8 public decimals = 0;          // the number of decimals
-    uint256 public totalSupply = 0;     // the total supply in this allocation
 
     // mapping of our users to balance
-    mapping(address => uint256) public balances;
+    mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
 
-    // make sure the address is not null
-    modifier isValidAddress(address _addr) { require(_addr != 0x0); _; }
-
-    // event to emit
-    event Transfer(address indexed _from, address indexed _to, uint256 _value);
-    event Approval(address indexed _from, address indexed _to, uint256 _value);
+    // // event to emit, this is derived
+    // event Transfer(address indexed _from, address indexed _to, uint256 _value);
+    // event Approval(address indexed _from, address indexed _to, uint256 _value);
 
     // our constructor. We have fixed everything above, and not as 
     // parameters in the constructor.
-    function ERC20Token(
-        string _name, 
-        string _symbol,
-        uint8 _decimals) {
-
+    function ERC20Token(string _name, string _symbol,uint8 _decimals) {
         name = _name;
         symbol = _symbol;
         decimals = _decimals;
     }
 
-    // // some getter functions
-    // function name() public constant returns (string name) { return name; }
-    // function symbol() public constant returns (string symbol) { return symbol; }
-    // function decimals() public constant returns (uint8 decimals) { return decimals; }
-
-    // // the attributes of the token
-    // function totalSupply() public constant returns (uint256 totalSupply) { 
-    //     return totalSupply; 
-    // }
-
     // get token balance
     function balanceOf(address _owner) 
         public constant 
-        returns (uint256 balance) {
+        returns (uint256 balance) 
+    {
         return balances[_owner];
     }    
 
@@ -92,15 +76,15 @@ contract ERC20Token is ERC20, Operations {
      */
     /// Initiate a transfer to `_to` with value `_value`?
     function transfer(address _to, uint256 _value) 
-        public
         isValidAddress(_to)
-        returns (bool success) {
-
+        public returns (bool success) 
+    {
         // sanity check
         require(_to != address(this));
 
         // check for overflows
-        if (balances[msg.sender] < _value || 
+        if (_value < 0 ||
+            balances[msg.sender] < _value || 
             balances[_to] + _value < balances[_to])
             throw;
 
@@ -124,24 +108,23 @@ contract ERC20Token is ERC20, Operations {
      * and Bob's balance shall be 20 in the allowance.
      */
     /// Initiate a transfer of `_value` from `_from` to `_to`
-    function transferFrom(address _from, address _to, uint256 _value) 
-        public
+    function transferFrom(address _from, address _to, uint256 _value)         
         isValidAddress(_from)
         isValidAddress(_to)
-        returns (bool success) {
-    
+        public returns (bool success) 
+    {    
         // sanity check
         require(_from != _to && _to != address(this));
 
         // check for overflows
         if (_value < 0 ||
             balances[_from] < _value || 
-            allowed[_from][msg.sender] < _value ||
+            allowed[_from][_to] < _value ||
             balances[_to] + _value < balances[_to])
             throw;
 
         // update public balance
-        allowed[_from][msg.sender] = subtract(allowed[_from][msg.sender], _value);        
+        allowed[_from][_to] = subtract(allowed[_from][_to], _value);        
         balances[_from] = subtract(balances[_from], _value);
         balances[_to] = add(balances[_to], _value);
 
@@ -163,11 +146,10 @@ contract ERC20Token is ERC20, Operations {
      *      Alice.approve(Bob, 30);     // gives 30 to Bob.
      */
     /// Approve `_spender` to claim/spend `_value`?
-    function approve(address _spender, uint256 _value) 
-        public 
+    function approve(address _spender, uint256 _value)          
         isValidAddress(_spender)
-        returns (bool success) {
-
+        public returns (bool success) 
+    {
         // sanity check
         require(_spender != address(this));            
 
@@ -184,12 +166,11 @@ contract ERC20Token is ERC20, Operations {
      * Check the allowance that has been approved previously by owner.
      */
     /// check allowance approved from `_owner` to `_spender`?
-    function allowance(address _owner, address _spender) 
-        public constant 
+    function allowance(address _owner, address _spender)          
         isValidAddress(_owner)
         isValidAddress(_spender)
-        returns (uint remaining) {
-
+        public constant returns (uint remaining) 
+    {
         // sanity check
         require(_owner != _spender && _spender != address(this));            
 

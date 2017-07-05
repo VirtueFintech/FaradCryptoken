@@ -25,30 +25,28 @@
  */
 pragma solidity ^0.4.11;
 
-contract Auction {
-    uint256 public startTime = 0;
-    uint256 public endTime = 0;
-    uint256 public supply = 0;
-    address public beneficiary;
+// Math helper functions
+contract Computable {
 
-    // modifiers
-    modifier isEarlierThan(uint256 _time) { assert(now < _time); _; }
-    modifier isLaterThan(uint256 _time) { assert(now > _time); _; }
-    modifier isInBetween(uint256 _begin, uint256 _end) { 
-        assert(now > _begin && now < _end); _; 
+    // empty constructor
+    function Computable() {}
+
+    function add(uint256 _x, uint256 _y) internal returns (uint256) {
+        uint256 z = _x + _y;
+        assert(z >= _x);
+        assert(z >= _y);
+        return z;
     }
 
-    function Auction(
-        uint256 _startTime, 
-        uint256 _endTime,
-        uint256 _supply) {
-        // some checks
-        assert(_endTime > _startTime);
-
-        startTime = _startTime;
-        endTime = _endTime;
-        supply = _supply;
-        beneficiary = msg.sender;
+    function subtract(uint256 _x, uint256 _y) internal returns (uint256) {
+        assert(_x >= _y);
+        return _x - _y;
     }
 
+    function multiply(uint256 _x, uint256 _y) internal returns (uint256) {
+        uint256 z = (_x * _y);
+        assert(_x == 0 ||  z/_x == _y);
+        return z;
+    }
 }
+

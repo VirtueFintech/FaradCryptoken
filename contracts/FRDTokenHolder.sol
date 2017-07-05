@@ -25,17 +25,17 @@
  */
 pragma solidity ^0.4.11;
 
-import './ICO.sol';
+import './Withdrawable.sol';
+import './Owned.sol';
 
-contract PublicICO is ICO {
+contract FRDTokenHolder is Owned, Withdrawable {
 
-    function PublicICO(
-        uint256 _startTime, 
-        uint256 _endTime,
-        uint256 _supply)
-        ICO(_startTime, _endTime, _supply) {
-
+    function withdraw(ERC20 _token, address _to, uint256 _value)
+        isValidAddress(_token)
+        isValidAddress(_to)
+        isValidAmount(_value)
+        public
+    {
+        assert(_token.transfer(_to, _value));
     }
-
 }
-

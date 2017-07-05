@@ -25,28 +25,13 @@
  */
 pragma solidity ^0.4.11;
 
-// Math helper functions
-contract Operations {
+contract Ownable {
 
-    // empty constructor
-    function Operations() {}
+    address public owner;       // current owner
+    address public newOwner;    // new owner
+  
+    function transferOwnership(address _newOwner);
+    function acceptOwnership();
 
-    function add(uint256 _x, uint256 _y) internal returns (uint256) {
-        uint256 z = _x + _y;
-        assert(z >= _x);
-        assert(z >= _y);
-        return z;
-    }
-
-    function subtract(uint256 _x, uint256 _y) internal returns (uint256) {
-        assert(_x >= _y);
-        return _x - _y;
-    }
-
-    function multiply(uint256 _x, uint256 _y) internal returns (uint256) {
-        uint256 z = (_x * _y);
-        assert(_x == 0 ||  z/_x == _y);
-        return z;
-    }
+    event NewOwner(address _prevOwner, address _newOwner);
 }
-

@@ -25,24 +25,42 @@
  */
 pragma solidity ^0.4.11;
 
-contract Dashboard {
+/**
+ * Guards is a handful of modifiers to be used throughout this project
+ */
+contract Guarded {
 
-    uint256 public escrowAccountBalance = 0;
-    uint256 public productionVolume = 0;
+    modifier isValidAmount(uint256 _amount) { 
+        require(_amount > 0); 
+        _; 
+    }
 
-    // mapping (hash => mapping (address => uint256)) public productTrace;
+    // ensure address not null, and not this contract address
+    modifier isValidAddress(address _address) {
+        require(_address != 0x0 && _address != address(this));
+        _;
+    }
 
-    // escrow account deposited
-    event EscrowAccountDeposited(uint256 _value);
+    modifier isValidSymbol(string _symbol) {
+        require(bytes(_symbol).length <= 6);
+        _;
+    }
 
-    // Escrow Account credited
-    function creditEscrowAccount(uint256 _value) public;
+    // ensures that it's earlier than the given time
+    modifier isBefore(uint256 _time) {
+        assert(now < _time);
+        _;
+    }
 
-    // production volume update, overrides the total volume so far
-    function updateProductionVolume(uint256 _volume) public;
+    // ensures that the current time is between _startTime (inclusive) and _endTime (exclusive)
+    modifier isInBetween(uint256 _startTime, uint256 _endTime) {
+        assert(now >= _startTime && now < _endTime);
+        _;
+    }
 
-    // add increments of production volume
-    function addProductionVolume(uint256 _increment) public;
+    modifier isAfter(uint256 _time) {
+        assert(now > _time);
+        _;
+    }
 
 }
-

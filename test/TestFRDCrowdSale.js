@@ -23,24 +23,20 @@
  * THE SOFTWARE.
  *
  */
-pragma solidity ^0.4.11;
 
-import './Operations.sol';
+/* global artifacts, contract, it, assert */
+/* eslint-disable prefer-reflect */
 
-contract Sink is Operations {
+const FRDCrowdSale = artifacts.require('./FRDCrowdSale.sol');
 
-    address public sink;
-    mapping(address => uint256) public sinkingFunds;
+contract('FRDCrowdSale', (accounts) => {
 
-    function Sink() {
-        sink = msg.sender;
-    }
+  const ETHER_CAP = 500000 * 1 ether;   // cap of 500k
 
-    // default fallback function
-    function() payable {
-        // where should this money go?
-        sinkingFunds[msg.sender] = add(sinkingFunds[msg.sender], msg.value);
-    }
+  it('shall have a cap of 500,000 Ether', async () => {
+    let sale = await FRDCrowdSale.new(now + 1 days, now + 31 days, ETHER_CAP, accounts[0]);
+    let cap = await sale.totalEtherCap();
+    assert.equal(cap, ETHER_CAP, 'should be 500k');
+  });
 
-    // only admin can issue transfer
-}
+});
