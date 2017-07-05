@@ -62,6 +62,10 @@ contract('FRDCrowdSale', (accounts) => {
     tokenAddress = token.address;
   });
 
+  /****************************************************************************
+   * Environment-related test
+   ***************************************************************************/
+
   it('shall prepare the crowdsale environment', async () => {
     let sale = await prepareCrowdsale(startTime);
     let token = await sale.token.call();  // get the token address
@@ -83,9 +87,14 @@ contract('FRDCrowdSale', (accounts) => {
     assert.equal(cap.toNumber(), etherCap);
   });
 
+  /****************************************************************************
+   * Constructor-related test
+   ***************************************************************************/
+
   it('shall not throw', async () => {
     try {
-      let sale = await FRDCrowdSale.new(tokenAddress, startTime, etherCap, beneficiary);
+      let sale = await FRDCrowdSale.new(tokenAddress, startTime, 
+        etherCap, beneficiary);
       assert(true, 'should not throw');
     } catch(e) {
       return Utils.ensureException(e);
@@ -103,7 +112,8 @@ contract('FRDCrowdSale', (accounts) => {
 
   it('shall throw for invalid begin time', async () => {
     try {
-      let sale = await FRDCrowdSale.new(tokenAddress, startTimeInProgress, etherCap, beneficiary);
+      let sale = await FRDCrowdSale.new(tokenAddress, startTimeInProgress, 
+        etherCap, beneficiary);
       assert(false, 'should throw');
     } catch(e) {
       return Utils.ensureException(e);
@@ -127,5 +137,21 @@ contract('FRDCrowdSale', (accounts) => {
       return Utils.ensureException(e);
     }
   });
+
+  /****************************************************************************
+   * Sales-related test
+   ***************************************************************************/
+
+  it('shall allow user to purchase', async () => {
+    let sale = await prepareCrowdsale(startTimeInProgress);
+    let res = await sale.contribute({from: owner, value: 20 * 1e+3});
+
+    // that should earn us about 20 FRDs
+    let contributed = await sale.totalEtherContributed.call();
+    assert.equal(20 * 1e+3, contributed.toNumber, 'shall be 20 finneys');
+  });
+  
+  it('shall returns the right amount for purchase using 1 Ether');
+  it('shall returns the right amount for purchase using 1 Finney');
 
 });
