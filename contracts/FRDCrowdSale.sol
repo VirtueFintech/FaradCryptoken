@@ -50,18 +50,18 @@ contract FRDCrowdSale is Guarded, Owned, Computable {
 
     function FRDCrowdSale(
         address _token,                 // the FRD token address
-        uint256 _startTime, 
-        // uint256 _totalEtherCap,
+        uint256 _startTime,             // the start time
+        uint256 _totalEtherCap,         // the total cap for this sale
         address _beneficiary)           // the beneficiary contract address
-
-        // isBefore(_endTime)              // current time should be earlier than the start time
-        // isValidAmount(_totalEtherCap)   // total cap must be > 0
+        isValidAddress(_token)          // token address is not null
+        isBefore(_startTime)            // now should be before start time
+        isValidAmount(_totalEtherCap)   // total cap must be > 0
         isValidAddress(_beneficiary)    // beneficiary address not null 
     {
         token = FRDToken(_token);       // set the FRDToken address
         startTime = _startTime;
         endTime = startTime + DURATION;
-        // totalEtherCap = _totalEtherCap;
+        totalEtherCap = _totalEtherCap;
         beneficiary = _beneficiary;
     }
 
@@ -69,8 +69,14 @@ contract FRDCrowdSale is Guarded, Owned, Computable {
         totalEtherCap = _cap;
     }
 
-    function () payable {
+    function contribute() 
+        isInBetween(startTime, endTime)
+        public payable {
         processContributions();
+    }
+
+    function () payable {
+        contribute();
     }
 
     function processContributions() private {
