@@ -46,7 +46,7 @@ contract FRDCrowdSale is Guarded, Owned, Computable {
 
     FRDToken public token;
 
-    event Contribution(address indexed _contributor, uint256 _amount, uint256 _return);
+    event Contribution(address indexed _contributor, uint256 _amount);
 
     function FRDCrowdSale(
         address _token,                 // the FRD token address
@@ -79,27 +79,35 @@ contract FRDCrowdSale is Guarded, Owned, Computable {
         contribute();
     }
 
+    /**
+     * Okay, we changed the process flow a bit where the actual FRD to ETH
+     * mapping shall be calculated, and pushed to the contract once the
+     * crowdsale is over.
+     *
+     * Then, the user can pull the tokens to their wallet.
+     *
+     */
     function processContributions() private {
         // send the amount to beneficiary
         assert(beneficiary.send(msg.value));
 
         // calculate how much FRD should be received.
-        uint256 tokenAmount = computeReturn(msg.value);
+        // uint256 tokenAmount = computeReturn(msg.value);
         totalEtherContributed = add(totalEtherContributed, msg.value);
 
         // issue the FRD token to the user
         //  we can use:
         // 1) transfer - which transfer directly
         // 2) approve - where user has to pull
-        token.approve(msg.sender, tokenAmount);
+        // token.approve(msg.sender, tokenAmount);
 
         // notify event for this contribution
-        Contribution(msg.sender, msg.value, tokenAmount);
+        Contribution(msg.sender, msg.value);
     }
 
-    function computeReturn(uint256 _contribution) private returns (uint256) {
-        // okay, 1 FRD == uint(ETH * 1000) || 1 Finney == 1 FRD
-        return multiply(_contribution, TOKEN_PRICE_D) / TOKEN_PRICE_N;
-    }
+    // function computeReturn(uint256 _contribution) private returns (uint256) {
+    //     // okay, 1 FRD == uint(ETH * 1000) || 1 Finney == 1 FRD
+    //     return multiply(_contribution, TOKEN_PRICE_D) / TOKEN_PRICE_N;
+    // }
 }
 
