@@ -26,52 +26,61 @@
 pragma solidity ^0.4.11;
 
 import './Guarded.sol';
-import './Owned.sol';
-import './Computable.sol';
-import './FRDToken.sol';
+import './Ownable.sol';
+import './SafeMath.sol';
+import './FRDCrypToken.sol';
 
-contract FRDCrowdSale is Guarded, Owned, Computable {
+contract FRDCrowdSale is Guarded, Ownable {
 
-    uint256 public DURATION = 30 days;          // duration of crowdsale
-    uint256 public TOKEN_PRICE_N = 1;           // numerator
-    uint256 public TOKEN_PRICE_D = 1000;        // denominator
+    using SafeMath for uint256;
+
+    mapping(address => uint256) contributions;      // contributions from public
+
+    uint256 public DURATION = 14 days;              // duration of crowdsale
 
     string public version = '0.1.1';
 
     uint256 public startTime = 0;                   // crowdsale start time (in seconds)
     uint256 public endTime = 0;                     // crowdsale end time (in seconds)
-    uint256 public totalEtherCap = 1000000 ether;   // current ether contribution cap, temporary
-    uint256 public totalEtherContributed = 0;       // ether contributed so far
-    address public beneficiary = 0x0;               // address to receive all ether contributions
+    uint256 public totalEtherCap = 2000000 ether;   // current ether contribution cap, temporary
+    uint256 public weiRaised = 0;                   // wei raised so far
+    address public wallet = 0x0;                    // address to receive all ether contributions
 
-    FRDToken public token;
+    FRDCrypToken public token;
 
     event Contribution(address indexed _contributor, uint256 _amount);
+
+    modifier isEtherCapNotReached() {
+        assert(weiRaised <= totalEtherCap);
+        _;
+    }
 
     function FRDCrowdSale(
         address _token,                 // the FRD token address
         uint256 _startTime,             // the start time
         uint256 _totalEtherCap,         // the total cap for this sale
-        address _beneficiary)           // the beneficiary contract address
+        address _wallet)                // the wallet contract address
         isValidAddress(_token)          // token address is not null
         isBefore(_startTime)            // now should be before start time
         isValidAmount(_totalEtherCap)   // total cap must be > 0
-        isValidAddress(_beneficiary)    // beneficiary address not null 
+        isValidAddress(_wallet)         // wallet address not null 
     {
-        token = FRDToken(_token);       // set the FRDToken address
+        token = FRDCrypToken(_token);       // set the FRDToken address
         startTime = _startTime;
         endTime = startTime + DURATION;
         totalEtherCap = _totalEtherCap;
-        beneficiary = _beneficiary;
+        wallet = _wallet;
     }
 
-    function setTotalEtherCap(uint256 _cap) isOwner(msg.sender) public {
-        totalEtherCap = _cap;
+    // @return true if crowdsale event has ended
+    function hasEnded() public constant returns (bool) {
+        return now > endTime;
     }
 
     function contribute() 
         isInBetween(startTime, endTime)
-        public payable {
+        isEtherCapNotReached()
+        public {
         processContributions();
     }
 
@@ -88,26 +97,32 @@ contract FRDCrowdSale is Guarded, Owned, Computable {
      *
      */
     function processContributions() private {
-        // send the amount to beneficiary
-        assert(beneficiary.send(msg.value));
 
-        // calculate how much FRD should be received.
-        // uint256 tokenAmount = computeReturn(msg.value);
-        totalEtherContributed = add(totalEtherContributed, msg.value);
+        uint256 weiAmount = msg.value;
+        uint256 updatedWeiRaised = weiRaised.add(weiAmount);
 
-        // issue the FRD token to the user
-        //  we can use:
-        // 1) transfer - which transfer directly
-        // 2) approve - where user has to pull
-        // token.approve(msg.sender, tokenAmount);
+        // update state
+        weiRaised = updatedWeiRaised;
 
         // notify event for this contribution
-        Contribution(msg.sender, msg.value);
+        contributions[msg.sender] = contributions[msg.sender].add(weiAmount);
+        Contribution(msg.sender, weiAmount);
+
+        // forware the funds
+        forwardFunds();
     }
 
-    // function computeReturn(uint256 _contribution) private returns (uint256) {
-    //     // okay, 1 FRD == uint(ETH * 1000) || 1 Finney == 1 FRD
-    //     return multiply(_contribution, TOKEN_PRICE_D) / TOKEN_PRICE_N;
+    // send ether to the fund collection wallet
+    // override to create custom fund forwarding mechanisms
+    function forwardFunds() internal {
+        wallet.transfer(msg.value);
+    }
+
+    // TODO: assigned FRD to holders 
+    // function assignFRD() onlyOwner {
+
     // }
+
+
 }
 
