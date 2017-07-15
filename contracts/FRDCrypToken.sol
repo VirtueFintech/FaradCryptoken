@@ -26,7 +26,8 @@
 pragma solidity ^0.4.11;
 
 import './ERC20Token.sol';
-// import './Administerable.sol';
+import './Claimable.sol';
+import './PullPayment.sol';
 
 /**
  * FRDCryptoken is the main contract that will be published, including the
@@ -35,10 +36,10 @@ import './ERC20Token.sol';
  * on the escrow balance whenever the cryptoyalty is paid from the manufacturer.
  *
  */
-contract FRDCrypToken is ERC20Token {
+contract FRDCrypToken is ERC20Token, PullPayment, Claimable {
 
 	// TODO: check the right number
-    uint256 public SUPPLY = 1638400000 ether;      // 1.6b supply
+    uint256 public SUPPLY = 1717986918 ether;      // 1.6b supply, in bytes
 
     // our constructor, just supply the total supply.
     function FRDCrypToken() 
@@ -47,5 +48,14 @@ contract FRDCrypToken is ERC20Token {
         totalSupply = SUPPLY;
         balances[msg.sender] = SUPPLY;
     }
+
+    function transferToFRDHolder(address _beneficiary, uint256 _value) 
+        isValidAddress(_beneficiary)
+        isValidAmount(_value)
+        onlyOwner {
+
+        assert(transfer(_beneficiary, _value));
+    }
+
 
 }
