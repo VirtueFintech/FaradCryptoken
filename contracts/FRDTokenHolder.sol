@@ -25,17 +25,26 @@
  */
 pragma solidity ^0.4.11;
 
-import './Withdrawable.sol';
-import './Owned.sol';
+import './PullPayment.sol';
+import './Claimable.sol';
+import './Guarded.sol';
+import './FRDCrypToken.sol';
 
-contract FRDTokenHolder is Owned, Withdrawable {
+contract FRDTokenHolder is Guarded, Claimable, PullPayment {
 
-    function withdraw(ERC20 _token, address _to, uint256 _value)
-        isValidAddress(_token)
-        isValidAddress(_to)
-        isValidAmount(_value)
-        public
-    {
-        assert(_token.transfer(_to, _value));
+    mapping (address => uint256) holders;   // FRD holders
+    FRDCrypToken public token;              // FRD token
+
+    function FRDTokenHolder(address _token) public {
+        token = FRDCrypToken(_token);       // set the FRDToken address
     }
+
+    function updateFRDHolder(address _beneficiary, uint256 _value) 
+        isValidAddress(_beneficiary)
+        isValidAmount(_value)
+        onlyOwner {
+
+        holders[_beneficiary] = _value;
+    }
+
 }
