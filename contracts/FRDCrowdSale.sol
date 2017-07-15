@@ -34,20 +34,20 @@ contract FRDCrowdSale is Guarded, Ownable {
 
     using SafeMath for uint256;
 
-    mapping(address => uint256) contributions;      // contributions from public
+    mapping(address => uint256) contributions;          // contributions from public
     uint256 contribCount = 0;
 
-    uint256 public DURATION = 14 days;              // duration of crowdsale
+    uint256 public DURATION = 14 days;                  // duration of crowdsale
 
     string public version = '0.1.1';
 
-    uint256 public startTime = 0;                   // crowdsale start time (in seconds)
-    uint256 public endTime = 0;                     // crowdsale end time (in seconds)
-    uint256 public totalEtherCap = 2000000 ether;   // current ether contribution cap, temporary
-    uint256 public weiRaised = 0;                   // wei raised so far
-    address public wallet = 0x0;                    // address to receive all ether contributions
+    uint256 public startTime = 0;                       // crowdsale start time (in seconds)
+    uint256 public endTime = 0;                         // crowdsale end time (in seconds)
+    uint256 public totalEtherCap = 1717986918 ether;    // current ether contribution cap, temporary
+    uint256 public weiRaised = 0;                       // wei raised so far
+    address public wallet = 0x0;                        // address to receive all ether contributions
 
-    uint256 public rate = 0;                        // the rate from wei to FRD
+    uint256 public rate = 0;                            // the rate from wei to FRD
 
     FRDCrypToken public token;
 
