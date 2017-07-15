@@ -35,6 +35,7 @@ contract FRDCrowdSale is Guarded, Ownable {
     using SafeMath for uint256;
 
     mapping(address => uint256) contributions;      // contributions from public
+    uint256 contribCount = 0;
 
     uint256 public DURATION = 14 days;              // duration of crowdsale
 
@@ -46,6 +47,8 @@ contract FRDCrowdSale is Guarded, Ownable {
     uint256 public weiRaised = 0;                   // wei raised so far
     address public wallet = 0x0;                    // address to receive all ether contributions
 
+    uint256 public rate = 0;                        // the rate from wei to FRD
+
     FRDCrypToken public token;
 
     event Contribution(address indexed _contributor, uint256 _amount);
@@ -55,21 +58,28 @@ contract FRDCrowdSale is Guarded, Ownable {
         _;
     }
 
+    modifier isRateUpdated() {
+        assert(rate != 0);
+        _;
+    }
+
     function FRDCrowdSale(
-        address _token,                 // the FRD token address
         uint256 _startTime,             // the start time
         uint256 _totalEtherCap,         // the total cap for this sale
         address _wallet)                // the wallet contract address
-        isValidAddress(_token)          // token address is not null
         isBefore(_startTime)            // now should be before start time
         isValidAmount(_totalEtherCap)   // total cap must be > 0
         isValidAddress(_wallet)         // wallet address not null 
     {
-        token = FRDCrypToken(_token);       // set the FRDToken address
+        token = createFRDContract();
         startTime = _startTime;
         endTime = startTime + DURATION;
         totalEtherCap = _totalEtherCap;
         wallet = _wallet;
+    }
+
+    function createFRDContract() internal returns (FRDCrypToken) {
+        return new FRDCrypToken();
     }
 
     // @return true if crowdsale event has ended
@@ -77,15 +87,8 @@ contract FRDCrowdSale is Guarded, Ownable {
         return now > endTime;
     }
 
-    function contribute() 
-        isInBetween(startTime, endTime)
-        isEtherCapNotReached()
-        public {
-        processContributions();
-    }
-
     function () payable {
-        contribute();
+        processContributions(msg.sender, msg.value);
     }
 
     /**
@@ -96,20 +99,31 @@ contract FRDCrowdSale is Guarded, Ownable {
      * Then, the user can pull the tokens to their wallet.
      *
      */
-    function processContributions() private {
+    function processContributions(address _contributor, uint256 _weiAmount) payable {
+        require(validPurchase());
 
-        uint256 weiAmount = msg.value;
-        uint256 updatedWeiRaised = weiRaised.add(weiAmount);
+        uint256 updatedWeiRaised = weiRaised.add(_weiAmount);
 
         // update state
         weiRaised = updatedWeiRaised;
 
         // notify event for this contribution
-        contributions[msg.sender] = contributions[msg.sender].add(weiAmount);
-        Contribution(msg.sender, weiAmount);
+        contributions[_contributor] = contributions[_contributor].add(_weiAmount);
+        contribCount += 1;
+        Contribution(_contributor, _weiAmount);
 
         // forware the funds
         forwardFunds();
+    }
+
+    // @return true if the transaction can buy tokens
+    function validPurchase() internal constant returns (bool) {
+        uint256 current = now;
+
+        bool withinPeriod = current >= startTime && current <= endTime;
+        bool nonZeroPurchase = msg.value != 0;
+        bool withinCap = weiRaised.add(msg.value) <= totalEtherCap;
+        return withinPeriod && nonZeroPurchase && withinCap;
     }
 
     // send ether to the fund collection wallet
@@ -118,10 +132,20 @@ contract FRDCrowdSale is Guarded, Ownable {
         wallet.transfer(msg.value);
     }
 
-    // TODO: assigned FRD to holders 
-    // function assignFRD() onlyOwner {
+    // TODO: post-ICO functions
 
-    // }
+    // Update rate of FRD to Wei once the calcilation has been done
+    // for post-ICO.
+    // 
+    function updateRate(uint256 _rate) onlyOwner {
+        rate = _rate;
+    }
+
+    function assignFRD() isRateUpdated onlyOwner {
+        for (uint256 i = 0; i < contribCount; i++ ) {
+
+        }
+    }
 
 
 }
