@@ -27,7 +27,7 @@ pragma solidity ^0.4.11;
 
 import './ERC20.sol';
 import './Guarded.sol';
-import './Computable.sol';
+import './SafeMath.sol';
 
 /**
  * Token is a generic ERC20 Token implementation. The totalSupply is not set
@@ -37,7 +37,8 @@ import './Computable.sol';
  * Further control like Owner can be added to enforce ownership transfer in the
  * derived contract.
  */
-contract ERC20Token is ERC20, Guarded, Computable {
+contract ERC20Token is ERC20, Guarded {
+    using SafeMath for uint256;
 
     string public standard = 'Cryptoken 0.1.1';
 
@@ -89,8 +90,8 @@ contract ERC20Token is ERC20, Guarded, Computable {
             throw;
 
         // 
-        balances[msg.sender] = subtract(balances[msg.sender], _value);
-        balances[_to] = add(balances[_to], _value);
+        balances[msg.sender] = balances[msg.sender].sub(_value);
+        balances[_to] = balances[_to].add(_value);
         
         // emit transfer event
         Transfer(msg.sender, _to, _value);
@@ -124,9 +125,9 @@ contract ERC20Token is ERC20, Guarded, Computable {
             throw;
 
         // update public balance
-        allowed[_from][_to] = subtract(allowed[_from][_to], _value);        
-        balances[_from] = subtract(balances[_from], _value);
-        balances[_to] = add(balances[_to], _value);
+        allowed[_from][_to] = allowed[_from][_to].sub(_value);        
+        balances[_from] = balances[_from].sub(_value);
+        balances[_to] = balances[_to].add(_value);
 
         // emit transfer event
         Transfer(_from, _to, _value);
