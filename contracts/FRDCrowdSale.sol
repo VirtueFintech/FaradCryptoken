@@ -41,11 +41,12 @@ contract FRDCrowdSale is Guarded, Ownable {
 
     string public version = '0.1.1';
 
-    uint256 public startTime = 1504137599;              // 08/30/2017 @ 11:59pm (UTC)
-    uint256 public endTime = 0;                         // crowdsale end time (in seconds)
+    uint256 public startBlock = 4243080;                // 31/08/2017 00:00:00
+    uint256 public endBlock = 4312608;                  // 14/09/2017 23:59:59
 
-    uint256 public totalEtherCap = 1200000 ether;       // 50% for ICO period
-    uint256 public weiRaised = 0;                       // wei raised so far
+    uint256 public totalEtherCap = 2400000 ether;       // Total raised for ICO
+    uint256 public weiRaised = 0;                       // wei raised in this ICO
+    uint256 public previousWeiRaised = 0;               // wei raised in the Pre-ICO
 
     address public wallet = 0x0;                        // address to receive all ether contributions
 
@@ -59,13 +60,12 @@ contract FRDCrowdSale is Guarded, Ownable {
     function FRDCrowdSale(address _wallet)    // the wallet contract address
         isValidAddress(_wallet)               // wallet address not null 
     {
-        endTime = startTime + DURATION;
         wallet = _wallet;
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now >= endTime;
+        return block.number >= endBlock;
     }
 
     function () payable {
@@ -99,13 +99,16 @@ contract FRDCrowdSale is Guarded, Ownable {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        uint256 current = now;
+        uint256 current = block.number;
 
-        // TODO: should we limit gas?
-
-        bool withinPeriod = current >= startTime && current <= endTime;
+        bool withinPeriod = current >= startBlock && current <= endBlock;
         bool nonZeroPurchase = msg.value != 0;
-        bool withinCap = weiRaised.add(msg.value) <= totalEtherCap;
+
+        // add total wei raised
+        uint256 totalWeiRaised = previousWeiRaised.add(weiRaised.add(msg.value));
+        bool withinCap = totalWeiRaised <= totalEtherCap;
+
+        // check all 3 conditions met
         return withinPeriod && nonZeroPurchase && withinCap;
     }
 

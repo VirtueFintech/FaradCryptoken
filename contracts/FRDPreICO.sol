@@ -39,9 +39,10 @@ contract FRDPreICO is Guarded, Ownable {
 
     string public version = '0.1.1';
 
-    uint256 public startTime = 1502150400;              // 08/08/2017 @ 12:00am (UTC)
-    uint256 public endTime = 1504137599;                // 08/30/2017 @ 11:59pm (UTC)
-    uint256 public totalEtherCap = 1200000 ether;       // current ether contribution cap for Pre-ICO
+    uint256 public startBlock = 4136471;                // 08/08/2017 00:00:00
+    uint256 public endBlock = 4242887;                  // 30/08/2017 23:00:00
+
+    uint256 public totalEtherCap = 1200000 ether;       // ether contribution cap for Pre-ICO
     uint256 public weiRaised = 0;                       // wei raised so far
     address public wallet = 0x0;                        // address to receive all ether contributions
 
@@ -60,7 +61,7 @@ contract FRDPreICO is Guarded, Ownable {
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now >= endTime;
+        return now >= endBlock;
     }
 
     function () payable {
@@ -94,9 +95,9 @@ contract FRDPreICO is Guarded, Ownable {
 
     // @return true if the transaction can buy tokens
     function validPurchase() internal constant returns (bool) {
-        uint256 current = now;
+        uint256 current = block.number;
 
-        bool withinPeriod = current >= startTime && current <= endTime;
+        bool withinPeriod = current >= startBlock && current <= endBlock;
         bool nonZeroPurchase = msg.value != 0;
         bool withinCap = weiRaised.add(msg.value) <= totalEtherCap;
         return withinPeriod && nonZeroPurchase && withinCap;
