@@ -41,15 +41,13 @@ contract FRDCrowdSale is Guarded, Ownable {
 
     string public version = '0.1.1';
 
-    uint256 public startTime = 0;                       // crowdsale start time (in seconds)
+    uint256 public startTime = 1504137599;              // 08/30/2017 @ 11:59pm (UTC)
     uint256 public endTime = 0;                         // crowdsale end time (in seconds)
-    uint256 public totalEtherCap = 1717986918 ether;    // current ether contribution cap, temporary
+
+    uint256 public totalEtherCap = 1200000 ether;       // 50% for ICO period
     uint256 public weiRaised = 0;                       // wei raised so far
+
     address public wallet = 0x0;                        // address to receive all ether contributions
-
-    uint256 public rate = 0;                            // the rate from wei to FRD
-
-    FRDCrypToken public token;
 
     event Contribution(address indexed _contributor, uint256 _amount);
 
@@ -58,33 +56,16 @@ contract FRDCrowdSale is Guarded, Ownable {
         _;
     }
 
-    modifier isRateUpdated() {
-        assert(rate != 0);
-        _;
-    }
-
-    function FRDCrowdSale(
-        uint256 _startTime,             // the start time
-        uint256 _totalEtherCap,         // the total cap for this sale
-        address _wallet)                // the wallet contract address
-        isBefore(_startTime)            // now should be before start time
-        isValidAmount(_totalEtherCap)   // total cap must be > 0
-        isValidAddress(_wallet)         // wallet address not null 
+    function FRDCrowdSale(address _wallet)    // the wallet contract address
+        isValidAddress(_wallet)               // wallet address not null 
     {
-        token = createFRDContract();
-        startTime = _startTime;
         endTime = startTime + DURATION;
-        totalEtherCap = _totalEtherCap;
         wallet = _wallet;
-    }
-
-    function createFRDContract() internal returns (FRDCrypToken) {
-        return new FRDCrypToken();
     }
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now > endTime;
+        return now >= endTime;
     }
 
     function () payable {
@@ -120,6 +101,8 @@ contract FRDCrowdSale is Guarded, Ownable {
     function validPurchase() internal constant returns (bool) {
         uint256 current = now;
 
+        // TODO: should we limit gas?
+
         bool withinPeriod = current >= startTime && current <= endTime;
         bool nonZeroPurchase = msg.value != 0;
         bool withinCap = weiRaised.add(msg.value) <= totalEtherCap;
@@ -131,22 +114,6 @@ contract FRDCrowdSale is Guarded, Ownable {
     function forwardFunds() internal {
         wallet.transfer(msg.value);
     }
-
-    // TODO: post-ICO functions
-
-    // Update rate of FRD to Wei once the calcilation has been done
-    // for post-ICO.
-    // 
-    function updateRate(uint256 _rate) onlyOwner {
-        rate = _rate;
-    }
-
-    function assignFRD() isRateUpdated onlyOwner {
-        for (uint256 i = 0; i < contribCount; i++ ) {
-
-        }
-    }
-
 
 }
 
