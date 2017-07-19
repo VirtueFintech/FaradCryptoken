@@ -41,17 +41,13 @@ contract FRDPreICO is Guarded, Ownable {
 
     uint256 public startBlock = 4136471;                // 08/08/2017 00:00:00
     uint256 public endBlock = 4242887;                  // 30/08/2017 23:00:00
+    uint256 public lastBlock = 0;
 
     uint256 public totalEtherCap = 1200000 ether;       // ether contribution cap for Pre-ICO
     uint256 public weiRaised = 0;                       // wei raised so far
     address public wallet = 0x0;                        // address to receive all ether contributions
 
     event Contribution(address indexed _contributor, uint256 _amount);
-
-    modifier isEtherCapNotReached() {
-        assert(weiRaised <= totalEtherCap);
-        _;
-    }
 
     function FRDPreICO(address _wallet) // the wallet contract address
         isValidAddress(_wallet)         // wallet address not null 
@@ -100,6 +96,15 @@ contract FRDPreICO is Guarded, Ownable {
         bool withinPeriod = current >= startBlock && current <= endBlock;
         bool nonZeroPurchase = msg.value != 0;
         bool withinCap = weiRaised.add(msg.value) <= totalEtherCap;
+        if (!withinCap) {
+            // take all the Ether raise in the current block only.
+            if (lastBlock == 0) {
+                lastBlock = current;
+            }
+            // check only 2 conditions
+            return withinPeriod && nonZeroPurchase;
+        }
+        // check all 3 conditions
         return withinPeriod && nonZeroPurchase && withinCap;
     }
 

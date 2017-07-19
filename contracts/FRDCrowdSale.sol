@@ -43,6 +43,7 @@ contract FRDCrowdSale is Guarded, Ownable {
 
     uint256 public startBlock = 4243080;                // 31/08/2017 00:00:00
     uint256 public endBlock = 4312608;                  // 14/09/2017 23:59:59
+    uint256 public lastBlock = 0;
 
     uint256 public totalEtherCap = 2400000 ether;       // Total raised for ICO
     uint256 public weiRaised = 0;                       // wei raised in this ICO
@@ -51,11 +52,6 @@ contract FRDCrowdSale is Guarded, Ownable {
     address public wallet = 0x0;                        // address to receive all ether contributions
 
     event Contribution(address indexed _contributor, uint256 _amount);
-
-    modifier isEtherCapNotReached() {
-        assert(weiRaised.add(previousWeiRaised) <= totalEtherCap);
-        _;
-    }
 
     function FRDCrowdSale(address _wallet)    // the wallet contract address
         isValidAddress(_wallet)               // wallet address not null 
@@ -108,6 +104,13 @@ contract FRDCrowdSale is Guarded, Ownable {
         uint256 totalWeiRaised = previousWeiRaised.add(weiRaised.add(msg.value));
         bool withinCap = totalWeiRaised <= totalEtherCap;
 
+        if (!withinCap) {
+            if (lastBlock == 0) {
+                lastBlock = current;
+            }
+            // check only 2 conditions
+            return nonZeroPurchase && withinPeriod;
+        }
         // check all 3 conditions met
         return withinPeriod && nonZeroPurchase && withinCap;
     }
