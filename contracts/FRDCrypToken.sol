@@ -39,7 +39,7 @@ import './PullPayment.sol';
 contract FRDCrypToken is ERC20Token, PullPayment, Claimable {
 
 	// TODO: check the right number
-    uint256 public SUPPLY = 1717986918 ether;      // 1.6b supply, in bytes
+    uint256 public SUPPLY = 1600000000 ether;   // 1.6b ether;
 
     // our constructor, just supply the total supply.
     function FRDCrypToken() 
@@ -49,6 +49,10 @@ contract FRDCrypToken is ERC20Token, PullPayment, Claimable {
         balances[msg.sender] = SUPPLY;
     }
 
+    /**
+     * this function is done on post ico.
+     * calculation is done off-chain
+     */
     function transferToFRDHolder(address _beneficiary, uint256 _value) 
         isValidAddress(_beneficiary)
         isValidAmount(_value)
