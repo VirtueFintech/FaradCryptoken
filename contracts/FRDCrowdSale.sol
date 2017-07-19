@@ -53,7 +53,7 @@ contract FRDCrowdSale is Guarded, Ownable {
     event Contribution(address indexed _contributor, uint256 _amount);
 
     modifier isEtherCapNotReached() {
-        assert(weiRaised <= totalEtherCap);
+        assert(weiRaised.add(previousWeiRaised) <= totalEtherCap);
         _;
     }
 
