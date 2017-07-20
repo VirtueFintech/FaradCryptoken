@@ -1,5 +1,5 @@
 /**
- * Copyright (C) Virtue Fintech FZCO, Dubai
+ * Copyright (C) Virtue Fintech FZ-LLC, Dubai
  * All rights reserved.
  *
  * MIT License
