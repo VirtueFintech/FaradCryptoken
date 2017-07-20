@@ -1,5 +1,4 @@
 /**
- * Hisham Ismail <1ofdafew@gmail.com>, and others.
  * Copyright (C) Virtue Fintech FZCO, Dubai
  * All rights reserved.
  *
@@ -42,7 +41,7 @@ contract FRDCrowdSale is Guarded, Ownable {
     string public version = '0.1.1';
 
     uint256 public startBlock = 4243080;                // 31/08/2017 00:00:00
-    uint256 public endBlock = 4312608;                  // 14/09/2017 23:59:59
+    uint256 public endBlock = 4307973;                  // 09/13/2017 23:59:59
     uint256 public lastBlock = 0;
 
     uint256 public totalEtherCap = 2400000 ether;       // Total raised for ICO

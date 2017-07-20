@@ -1,5 +1,4 @@
 /**
- * Hisham Ismail <1ofdafew@gmail.com>, and others.
  * Copyright (C) Virtue Fintech FZCO, Dubai
  * All rights reserved.
  *
