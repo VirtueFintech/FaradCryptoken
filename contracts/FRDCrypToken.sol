@@ -37,28 +37,28 @@ import './PullPayment.sol';
  */
 contract FRDCrypToken is ERC20Token, PullPayment, Claimable {
 
-	// TODO: check the right number
-    uint256 public SUPPLY = 1600000000 ether;   // 1.6b ether;
+  // TODO: check the right number
+  uint256 public SUPPLY = 1600000000 ether;   // 1.6b ether;
 
-    // our constructor, just supply the total supply.
-    function FRDCrypToken() 
-        ERC20Token('FARAD', 'FRD', 18) 
-    {
-        totalSupply = SUPPLY;
-        balances[msg.sender] = SUPPLY;
-    }
+  // our constructor, just supply the total supply.
+  function FRDCrypToken() 
+    ERC20Token('FARAD', 'FRD', 18) 
+  {
+    totalSupply = SUPPLY;
+    balances[msg.sender] = SUPPLY;
+  }
 
-    /**
-     * this function is done on post ico.
-     * calculation is done off-chain
-     */
-    function transferToFRDHolder(address _beneficiary, uint256 _value) 
-        isValidAddress(_beneficiary)
-        isValidAmount(_value)
-        onlyOwner {
+  /**
+   * this function is done on post ico.
+   * calculation is done off-chain
+   */
+  function transferToFRDHolder(address _beneficiary, uint256 _value) 
+    isValidAddress(_beneficiary)
+    isValidAmount(_value)
+    onlyOwner {
 
-        assert(transfer(_beneficiary, _value));
-    }
+    assert(transfer(_beneficiary, _value));
+  }
 
 
 }

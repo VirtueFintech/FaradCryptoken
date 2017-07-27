@@ -29,37 +29,37 @@ pragma solidity ^0.4.11;
  */
 contract Guarded {
 
-    modifier isValidAmount(uint256 _amount) { 
-        require(_amount > 0); 
-        _; 
-    }
+  modifier isValidAmount(uint256 _amount) { 
+    require(_amount > 0); 
+    _; 
+  }
 
-    // ensure address not null, and not this contract address
-    modifier isValidAddress(address _address) {
-        require(_address != 0x0 && _address != address(this));
-        _;
-    }
+  // ensure address not null, and not this contract address
+  modifier isValidAddress(address _address) {
+    require(_address != 0x0 && _address != address(this));
+    _;
+  }
 
-    modifier isValidSymbol(string _symbol) {
-        require(bytes(_symbol).length <= 6);
-        _;
-    }
+  modifier isValidSymbol(string _symbol) {
+    require(bytes(_symbol).length <= 6);
+    _;
+  }
 
-    // ensures that it's earlier than the given time
-    modifier isBefore(uint256 _time) {
-        assert(now < _time);
-        _;
-    }
+  // ensures that it's earlier than the given time
+  modifier isBefore(uint256 _time) {
+    assert(now < _time);
+    _;
+  }
 
-    // ensures that the current time is between _startTime (inclusive) and _endTime (exclusive)
-    modifier isInBetween(uint256 _startTime, uint256 _endTime) {
-        assert(now >= _startTime && now < _endTime);
-        _;
-    }
+  // ensures that the current time is between _startTime (inclusive) and _endTime (exclusive)
+  modifier isInBetween(uint256 _startTime, uint256 _endTime) {
+    assert(now >= _startTime && now < _endTime);
+    _;
+  }
 
-    modifier isAfter(uint256 _time) {
-        assert(now > _time);
-        _;
-    }
+  modifier isAfter(uint256 _time) {
+    assert(now > _time);
+    _;
+  }
 
 }
