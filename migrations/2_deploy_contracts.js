@@ -23,11 +23,27 @@
  * THE SOFTWARE.
  *
  */
-// var ConvertLib = artifacts.require("./ConvertLib.sol");
-// var MetaCoin = artifacts.require("./MetaCoin.sol");
+var SafeMath = artifacts.require("./SafeMath.sol");
+var Claimable = artifacts.require("./Claimable.sol");
+var ERC20 = artifacts.require("./ERC20.sol");
+var ERC20Token = artifacts.require("./ERC20Token.sol");
+var FRDCrowdSale = artifacts.require("./FRDCrowdSale.sol");
+var FRDPreICO = artifacts.require("./FRDPreICO.sol");
+var Guarded = artifacts.require("./Guarded.sol");
+var Migrations = artifacts.require("./Migrations.sol");
+var Ownable = artifacts.require("./Ownable.sol");
 
 module.exports = function(deployer) {
-  // deployer.deploy(ConvertLib);
-  // deployer.link(ConvertLib, MetaCoin);
-  // deployer.deploy(MetaCoin);
+  deployer.deploy(SafeMath);
+  deployer.deploy(Claimable);
+  deployer.deploy(ERC20);
+  deployer.deploy(ERC20Token);
+  deployer.deploy(FRDCrowdSale);
+  deployer.deploy(FRDPreICO);
+  deployer.deploy(Guarded);
+  deployer.deploy(Migrations);
+  deployer.deploy(Ownable);
+  deployer.link(SafeMath, FRDCrowdSale);
+  deployer.link(SafeMath, FRDPreICO);
+  deployer.link(SafeMath, ERC20Token);
 };
