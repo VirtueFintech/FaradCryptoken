@@ -27,7 +27,6 @@ pragma solidity ^0.4.11;
 import './Guarded.sol';
 import './Ownable.sol';
 import './SafeMath.sol';
-import './FRDCrypToken.sol';
 
 contract FRDCrowdSale is Guarded, Ownable {
 
@@ -44,7 +43,7 @@ contract FRDCrowdSale is Guarded, Ownable {
     uint256 public endBlock = 4307973;                  // 09/13/2017 23:59:59
     uint256 public lastBlock = 0;
 
-    uint256 public totalEtherCap = 2400000 ether;       // Total raised for ICO
+    uint256 public totalEtherCap = 1000000 ether;       // Total raised for ICO
     uint256 public weiRaised = 0;                       // wei raised in this ICO
     uint256 public previousWeiRaised = 0;               // wei raised in the Pre-ICO
 

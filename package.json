@@ -7,8 +7,9 @@
     "npm": "^5.0.4"
   },
   "dependencies": {
+    "bignumber": "^1.1.0",
     "truffle": "^3.3.0",
-    "bignumber": "^1.1.0"
+    "zeppelin-solidity": "^1.2.0"
   },
   "description": "Farad Cryptoken Program on Ethereum Blockchain implementing ERC20 interface",
   "main": "truffle.js",

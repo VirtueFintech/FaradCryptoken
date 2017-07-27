@@ -27,7 +27,6 @@ pragma solidity ^0.4.11;
 import './Guarded.sol';
 import './Ownable.sol';
 import './SafeMath.sol';
-import './FRDCrypToken.sol';
 
 contract FRDPreICO is Guarded, Ownable {
 
@@ -56,7 +55,12 @@ contract FRDPreICO is Guarded, Ownable {
 
     // @return true if crowdsale event has ended
     function hasEnded() public constant returns (bool) {
-        return now >= endBlock;
+        return block.number >= endBlock;
+    }
+
+    // Get the current block number
+    function currentBlock() public constant returns (uint256) {
+        return block.number;
     }
 
     function () payable {
