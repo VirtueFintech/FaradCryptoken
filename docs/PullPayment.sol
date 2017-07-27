@@ -24,9 +24,7 @@
  */
 pragma solidity ^0.4.11;
 
-
 import './SafeMath.sol';
-
 
 /**
  * @title PullPayment
@@ -71,4 +69,5 @@ contract PullPayment {
       throw;
     }
   }
+  
 }

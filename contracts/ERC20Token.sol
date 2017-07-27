@@ -25,7 +25,6 @@
 pragma solidity ^0.4.11;
 
 import './ERC20.sol';
-import './Guarded.sol';
 import './SafeMath.sol';
 
 /**
@@ -36,7 +35,7 @@ import './SafeMath.sol';
  * Further control like Owner can be added to enforce ownership transfer in the
  * derived contract.
  */
-contract ERC20Token is ERC20, Guarded {
+contract ERC20Token is ERC20 {
   using SafeMath for uint256;
 
   string public standard = 'Cryptoken 0.1.1';
@@ -49,13 +48,9 @@ contract ERC20Token is ERC20, Guarded {
   mapping (address => uint256) public balances;
   mapping (address => mapping (address => uint256)) public allowed;
 
-  // // event to emit, this is derived
-  // event Transfer(address indexed _from, address indexed _to, uint256 _value);
-  // event Approval(address indexed _from, address indexed _to, uint256 _value);
-
   // our constructor. We have fixed everything above, and not as 
   // parameters in the constructor.
-  function ERC20Token(string _name, string _symbol,uint8 _decimals) {
+  function ERC20Token(string _name, string _symbol, uint8 _decimals) {
     name = _name;
     symbol = _symbol;
     decimals = _decimals;
@@ -76,17 +71,15 @@ contract ERC20Token is ERC20, Guarded {
    */
   /// Initiate a transfer to `_to` with value `_value`?
   function transfer(address _to, uint256 _value) 
-    isValidAddress(_to)
     public returns (bool success) 
   {
     // sanity check
     require(_to != address(this));
 
-    // check for overflows
-    if (_value < 0 ||
-      balances[msg.sender] < _value || 
-      balances[_to] + _value < balances[_to])
-      throw;
+    // // check for overflows
+    // require(_value > 0 &&
+    //   balances[msg.sender] < _value &&
+    //   balances[_to] + _value < balances[_to]);
 
     // 
     balances[msg.sender] = balances[msg.sender].sub(_value);
@@ -109,19 +102,17 @@ contract ERC20Token is ERC20, Guarded {
    */
   /// Initiate a transfer of `_value` from `_from` to `_to`
   function transferFrom(address _from, address _to, uint256 _value)         
-    isValidAddress(_from)
-    isValidAddress(_to)
     public returns (bool success) 
   {    
     // sanity check
+    require(_to != 0x0 && _from != 0x0);
     require(_from != _to && _to != address(this));
 
     // check for overflows
-    if (_value < 0 ||
-      balances[_from] < _value || 
-      allowed[_from][_to] < _value ||
-      balances[_to] + _value < balances[_to])
-      throw;
+    // require(_value > 0 &&
+    //   balances[_from] >= _value &&
+    //   allowed[_from][_to] <= _value &&
+    //   balances[_to] + _value < balances[_to]);
 
     // update public balance
     allowed[_from][_to] = allowed[_from][_to].sub(_value);        
@@ -147,11 +138,10 @@ contract ERC20Token is ERC20, Guarded {
    */
   /// Approve `_spender` to claim/spend `_value`?
   function approve(address _spender, uint256 _value)          
-    isValidAddress(_spender)
     public returns (bool success) 
   {
     // sanity check
-    require(_spender != address(this));            
+    require(_spender != 0x0 && _spender != address(this));            
 
     // if the allowance isn't 0, it can only be updated to 0 to prevent 
     // an allowance change immediately after withdrawal
@@ -167,11 +157,10 @@ contract ERC20Token is ERC20, Guarded {
    */
   /// check allowance approved from `_owner` to `_spender`?
   function allowance(address _owner, address _spender)          
-    isValidAddress(_owner)
-    isValidAddress(_spender)
     public constant returns (uint remaining) 
   {
     // sanity check
+    require(_spender != 0x0 && _owner != 0x0);
     require(_owner != _spender && _spender != address(this));            
 
     // constant op. Just return the balance.

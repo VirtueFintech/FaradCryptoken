@@ -40,26 +40,4 @@ contract Guarded {
     _;
   }
 
-  modifier isValidSymbol(string _symbol) {
-    require(bytes(_symbol).length <= 6);
-    _;
-  }
-
-  // ensures that it's earlier than the given time
-  modifier isBefore(uint256 _time) {
-    assert(now < _time);
-    _;
-  }
-
-  // ensures that the current time is between _startTime (inclusive) and _endTime (exclusive)
-  modifier isInBetween(uint256 _startTime, uint256 _endTime) {
-    assert(now >= _startTime && now < _endTime);
-    _;
-  }
-
-  modifier isAfter(uint256 _time) {
-    assert(now > _time);
-    _;
-  }
-
 }
