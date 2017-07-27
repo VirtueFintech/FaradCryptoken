@@ -60,5 +60,4 @@ contract FRDCrypToken is ERC20Token, PullPayment, Claimable {
     assert(transfer(_beneficiary, _value));
   }
 
-
 }
