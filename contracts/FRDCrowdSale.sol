@@ -79,7 +79,7 @@ contract FRDCrowdSale is Guarded, Ownable {
    * Then, the user can pull the tokens to their wallet.
    *
    */
-  function processContributions(address _contributor, uint256 _weiAmount) internal payable {
+  function processContributions(address _contributor, uint256 _weiAmount) payable {
     require(validPurchase());
 
     uint256 updatedWeiRaised = weiRaised.add(_weiAmount);
