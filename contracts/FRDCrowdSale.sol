@@ -48,7 +48,6 @@ contract FRDCrowdSale is Guarded, Ownable {
 
   uint256 public totalEtherCap = 1000000 ether;       // Total raised for ICO
   uint256 public weiRaised = 0;                       // wei raised in this ICO
-  uint256 public previousWeiRaised = 0;               // wei raised in the Pre-ICO
 
   address public wallet = 0x25D28eC02B63D5216f2Dc2f63c53d17D95612Cf6;
 
@@ -80,7 +79,7 @@ contract FRDCrowdSale is Guarded, Ownable {
    * Then, the user can pull the tokens to their wallet.
    *
    */
-  function processContributions(address _contributor, uint256 _weiAmount) payable {
+  function processContributions(address _contributor, uint256 _weiAmount) internal payable {
     require(validPurchase());
 
     uint256 updatedWeiRaised = weiRaised.add(_weiAmount);
@@ -105,7 +104,7 @@ contract FRDCrowdSale is Guarded, Ownable {
     bool nonZeroPurchase = msg.value != 0;
 
     // add total wei raised
-    uint256 totalWeiRaised = previousWeiRaised.add(weiRaised.add(msg.value));
+    uint256 totalWeiRaised = weiRaised.add(msg.value);
     bool withinCap = totalWeiRaised <= totalEtherCap;
 
     if (!withinCap) {
