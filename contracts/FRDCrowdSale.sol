@@ -44,7 +44,6 @@ contract FRDCrowdSale is Guarded, Ownable {
 
   uint256 public startBlock = 1381500;                // ropsten, Jul-27-2017 02:40:34 PM +UTC
   uint256 public endBlock = 1419636;                  // 1 week after
-  uint256 public lastBlock = 0;
 
   uint256 public totalEtherCap = 1000000 ether;       // Total raised for ICO
   uint256 public weiRaised = 0;                       // wei raised in this ICO
@@ -107,13 +106,6 @@ contract FRDCrowdSale is Guarded, Ownable {
     uint256 totalWeiRaised = weiRaised.add(msg.value);
     bool withinCap = totalWeiRaised <= totalEtherCap;
 
-    if (!withinCap) {
-      if (lastBlock == 0) {
-        lastBlock = current;
-      }
-      // check only 2 conditions
-      return nonZeroPurchase && withinPeriod;
-    }
     // check all 3 conditions met
     return withinPeriod && nonZeroPurchase && withinCap;
   }
