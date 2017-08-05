@@ -2,6 +2,9 @@
  * Copyright (C) Virtue Fintech FZ-LLC, Dubai
  * All rights reserved.
  *
+ * This is the default Truffle code
+ * more at http://truffleframework.com
+ *
  * MIT License
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy 

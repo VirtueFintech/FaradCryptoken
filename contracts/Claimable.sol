@@ -2,6 +2,9 @@
  * Copyright (C) Virtue Fintech FZ-LLC, Dubai
  * All rights reserved.
  *
+ * This code is adapted from OpenZeppelin Project.
+ * more at http://openzeppelin.org.
+ *
  * MIT License
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy 
