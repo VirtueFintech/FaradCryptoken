@@ -4,7 +4,7 @@
 
 This is the repository for FARAD Crowdsale contract with the following details:
 
-| Item | Value |
+| Name | Description |
 |------|-------|
 | **ICO Sale Volume** | 1,280,000,000 units |
 | **Total ICO Volume** | 1,600,000,000 units |
