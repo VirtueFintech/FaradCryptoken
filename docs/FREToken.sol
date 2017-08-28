@@ -272,28 +272,16 @@ contract ERC20Token is ERC20 {
 
 }
 
-contract FRDCrypToken is ERC20Token, Guarded, Claimable {
+contract FREToken is ERC20Token, Guarded, Claimable {
 
     uint256 public SUPPLY = 1600000000 ether;   // 1.6b ether;
 
     // our constructor, just supply the total supply.
-    function FRDCrypToken() 
-        ERC20Token('FARAD', 'FRD', 18) 
+    function FREToken() 
+        ERC20Token('FARAD Escrow', 'FRE', 18) 
     {
         totalSupply = SUPPLY;
         balances[msg.sender] = SUPPLY;
-    }
-
-    /**
-     * this function is done on post ico.
-     * calculation is done off-chain
-     */
-    function transferToFRDHolder(address _recipient, uint256 _value) 
-        isValidAddress(_recipient)
-        isValidAmount(_value)
-        onlyOwner {
-
-        assert(transfer(_recipient, _value));
     }
 
 }

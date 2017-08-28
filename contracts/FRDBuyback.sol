@@ -28,46 +28,78 @@ import './Guarded.sol';
 import './Ownable.sol';
 import './SafeMath.sol';
 
-contract FRDCrowdSale is Guarded, Ownable {
+contract FRDBuyback is Guarded, Ownable {
 
     using SafeMath for uint256;
 
-    mapping(address => uint256) contributions;          // contributions from public
-    uint256 contribCount = 0;
-
-    uint256 public DURATION = 14 days;                  // duration of crowdsale
+    mapping(address => uint256) redeemers;    // contributions from FRD holders
+    uint256 redeemCount = 0;
 
     string public version = '0.1.1';
 
-    // uint256 public startBlock = 4243080;                // 07/08/2017 13:00:00, 1502110800
-    // uint256 public endBlock = 4307973;                  // 09/13/2017 23:59:59, 1505347199
+    uint256 public startBlock;
+    uint256 public endBlock;
 
-    uint256 public startBlock = 1381500;                // ropsten, Jul-27-2017 02:40:34 PM +UTC
-    uint256 public endBlock = 1419636;                  // 1 week after
-
-    uint256 public totalEtherCap = 1000000 ether;       // Total raised for ICO
-    uint256 public weiRaised = 0;                       // wei raised in this ICO
+    uint256 public totalRedeemCap;
+    uint256 public weiRedeemed = 0;               // wei redeemed in this Buyback
 
     address public wallet = 0x25D28eC02B63D5216f2Dc2f63c53d17D95612Cf6;
 
-    event Contribution(address indexed _contributor, uint256 _amount);
+    event Buyback(address indexed _participant, uint256 _amount);
 
-    function FRDCrowdSale() {
+    function FRDBuyback() {
     }
 
-    // function to stop the CrowdSale 
+    // change the wallet address
+    /// change the wallet to `_wallet`?
+    function setWallet(address _wallet) onlyOwner public {
+        wallet = _wallet;
+    }
+
+    // function to initialize buyback 
+    /// start the redeem program at `_startBlock`, ends at `_endBlock` with total redeem of `_redeemCap`
+    function initialize(uint256 _startBlock, uint256 _endBlock, uint256 _redeemCap) onlyOwner public {
+        startBlock = _startBlock;
+        endBlock = _endBlock;
+        totalRedeemCap = _redeemCap;
+        weiRedeemed = 0;
+    }
+
+    // function to start the Buyback 
+    /// stop the crowdsale at `_startBlock`
+    function setStartBlock(uint256 _startBlock) onlyOwner public {
+        startBlock = _startBlock;
+    }
+
+    // function to stop the Buyback 
     /// stop the crowdsale at `_endBlock`
     function setEndBlock(uint256 _endBlock) onlyOwner public {
         endBlock = _endBlock;
     }
 
-    // @return true if crowdsale event has ended
+    // function to stop the Buyback 
+    /// stop the crowdsale at `_endBlock`
+    function setTotalRedeemCap(uint256 _redeemCap) onlyOwner public {
+        totalRedeemCap = _redeemCap;
+    }
+
+    // @return true if buyback has started
+    function isCommencing() public constant returns (bool) {
+        return (block.number >= startBlock && block.number <= endBlock);
+    }
+
+    // @return true if buyback has started
+    function hasStarted() public constant returns (bool) {
+        return block.number >= startBlock;
+    }
+
+    // @return true if buyback has ended
     function hasEnded() public constant returns (bool) {
         return block.number >= endBlock;
     }
 
     function () payable {
-        processContributions(msg.sender, msg.value);
+        processBuyback(msg.sender, msg.value);
     }
 
     /**
@@ -78,18 +110,17 @@ contract FRDCrowdSale is Guarded, Ownable {
      * Then, the user can pull the tokens to their wallet.
      *
      */
-    function processContributions(address _contributor, uint256 _weiAmount) payable {
+    function processBuyback(address _participant, uint256 _weiAmount) payable {
         require(validPurchase());
 
-        uint256 updatedWeiRaised = weiRaised.add(_weiAmount);
-
         // update state
-        weiRaised = updatedWeiRaised;
+        weiRedeemed = weiRedeemed.add(_weiAmount);
 
         // notify event for this contribution
-        contributions[_contributor] = contributions[_contributor].add(_weiAmount);
-        contribCount += 1;
-        Contribution(_contributor, _weiAmount);
+        redeemers[_participant] = redeemers[_participant].add(_weiAmount);
+        redeemCount = redeemCount.add(1);
+
+        Buyback(_participant, _weiAmount);
 
         // forware the funds
         forwardFunds();
@@ -103,8 +134,8 @@ contract FRDCrowdSale is Guarded, Ownable {
         bool nonZeroPurchase = msg.value != 0;
 
         // add total wei raised
-        uint256 totalWeiRaised = weiRaised.add(msg.value);
-        bool withinCap = totalWeiRaised <= totalEtherCap;
+        uint256 totalFRDRedeemed = weiRedeemed.add(msg.value);
+        bool withinCap = totalFRDRedeemed <= totalRedeemCap;
 
         // check all 3 conditions met
         return withinPeriod && nonZeroPurchase && withinCap;

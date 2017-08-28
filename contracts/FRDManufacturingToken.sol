@@ -24,50 +24,27 @@
  */
 pragma solidity ^0.4.11;
 
-import './SafeMath.sol';
+import './ERC20Token.sol';
+import './Claimable.sol';
+import './Guarded.sol';
 
 /**
- * @title PullPayment
- * @dev Base contract supporting async send for pull payments. Inherit from this
- * contract and use asyncSend instead of send.
+ * FRDCryptoken is the main contract that will be published, including the
+ * manufacturing paramters that need to be pushed/published to the blockchain
+ * for traceability in the manufaturing process, as well as real-time updates
+ * on the escrow balance whenever the cryptoyalty is paid from the manufacturer.
+ *
  */
-contract PullPayment {
-    using SafeMath for uint256;
+contract FRDManufacturingToken is ERC20Token, Guarded, Claimable {
 
-    mapping(address => uint256) public payments;
-    uint256 public totalPayments;
+    uint256 public SUPPLY = 1600000000 ether;   // 1.6b ether;
 
-    /**
-    * @dev Called by the payer to store the sent amount as credit to be pulled.
-    * @param dest The destination address of the funds.
-    * @param amount The amount to transfer.
-    */
-    function asyncSend(address dest, uint256 amount) internal {
-        payments[dest] = payments[dest].add(amount);
-        totalPayments = totalPayments.add(amount);
+    // our constructor, just supply the total supply.
+    function FRDManufacturingToken() 
+        ERC20Token('FARAD Manufacturing', 'FRM', 18) 
+    {
+        totalSupply = SUPPLY;
+        balances[msg.sender] = SUPPLY;
     }
 
-    /**
-    * @dev withdraw accumulated balance, called by payee.
-    */
-    function withdrawPayments() {
-        address payee = msg.sender;
-        uint256 payment = payments[payee];
-
-        if (payment == 0) {
-            throw;
-        }
-
-        if (this.balance < payment) {
-            throw;
-        }
-
-        totalPayments = totalPayments.sub(payment);
-        payments[payee] = 0;
-
-        if (!payee.send(payment)) {
-            throw;
-        }
-    }
-    
 }
