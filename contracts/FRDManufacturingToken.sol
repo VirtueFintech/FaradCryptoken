@@ -37,6 +37,9 @@ import './Guarded.sol';
  */
 contract FRDManufacturingToken is ERC20Token, Guarded, Claimable {
 
+	// This is issued from GAB to FARAD Ltd.
+	// 1 unit is equal to 1mF.
+	// 
     uint256 public SUPPLY = 1600000000 ether;   // 1.6b ether;
 
     // our constructor, just supply the total supply.

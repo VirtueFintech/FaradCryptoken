@@ -37,11 +37,14 @@ import './Guarded.sol';
  */
 contract FRDEscrowToken is ERC20Token, Guarded, Claimable {
 
-    uint256 public SUPPLY = 1600000000 ether;   // 1.6b ether;
+	// total supply is thethered in US Dollar.
+	// to be issued by FARAD ltd. to Guangxi Aero-Beidou.
+	// 
+    uint256 public SUPPLY = 231249990 ether;   // in Dollar value.
 
     // our constructor, just supply the total supply.
     function FRDEscrowToken() 
-        ERC20Token('FARAD Escrow', 'FRE', 18) 
+        ERC20Token('FARAD Escrow', 'FRE', 2) 
     {
         totalSupply = SUPPLY;
         balances[msg.sender] = SUPPLY;
