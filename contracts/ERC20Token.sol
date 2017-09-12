@@ -39,135 +39,135 @@ import './SafeMath.sol';
  * derived contract.
  */
 contract ERC20Token is ERC20 {
-  using SafeMath for uint256;
+    using SafeMath for uint256;
 
-  string public standard = 'Cryptoken 0.1.1';
+    string public standard = 'Cryptoken 0.1.1';
 
-  string public name = '';            // the token name
-  string public symbol = '';          // the token symbol
-  uint8 public decimals = 0;          // the number of decimals
+    string public name = '';            // the token name
+    string public symbol = '';          // the token symbol
+    uint8 public decimals = 0;          // the number of decimals
 
-  // mapping of our users to balance
-  mapping (address => uint256) public balances;
-  mapping (address => mapping (address => uint256)) public allowed;
+    // mapping of our users to balance
+    mapping (address => uint256) public balances;
+    mapping (address => mapping (address => uint256)) public allowed;
 
-  // our constructor. We have fixed everything above, and not as 
-  // parameters in the constructor.
-  function ERC20Token(string _name, string _symbol, uint8 _decimals) {
-    name = _name;
-    symbol = _symbol;
-    decimals = _decimals;
-  }
+    // our constructor. We have fixed everything above, and not as 
+    // parameters in the constructor.
+    function ERC20Token(string _name, string _symbol, uint8 _decimals) {
+        name = _name;
+        symbol = _symbol;
+        decimals = _decimals;
+    }
 
-  // get token balance
-  function balanceOf(address _owner) 
-    public constant 
-    returns (uint256 balance) 
-  {
-    return balances[_owner];
-  }    
+    // get token balance
+    function balanceOf(address _owner) 
+        public constant 
+        returns (uint256 balance) 
+    {
+        return balances[_owner];
+    }    
 
-  /**
-   * make a transfer. This can be called from the token holder.
-   * e.g. Token holder Alice, can issue somethign like this to Bob
-   *      Alice.transfer(Bob, 200);     // to transfer 200 to Bob
-   */
-  /// Initiate a transfer to `_to` with value `_value`?
-  function transfer(address _to, uint256 _value) 
-    public returns (bool success) 
-  {
-    // sanity check
-    require(_to != address(this));
+    /**
+     * make a transfer. This can be called from the token holder.
+     * e.g. Token holder Alice, can issue somethign like this to Bob
+     *      Alice.transfer(Bob, 200);     // to transfer 200 to Bob
+     */
+    /// Initiate a transfer to `_to` with value `_value`?
+    function transfer(address _to, uint256 _value) 
+        public returns (bool success) 
+    {
+        // sanity check
+        require(_to != address(this));
 
-    // // check for overflows
-    // require(_value > 0 &&
-    //   balances[msg.sender] < _value &&
-    //   balances[_to] + _value < balances[_to]);
+        // // check for overflows
+        // require(_value > 0 &&
+        //   balances[msg.sender] < _value &&
+        //   balances[_to] + _value < balances[_to]);
 
-    // 
-    balances[msg.sender] = balances[msg.sender].sub(_value);
-    balances[_to] = balances[_to].add(_value);
-    
-    // emit transfer event
-    Transfer(msg.sender, _to, _value);
-    return true;
-  }
+        // 
+        balances[msg.sender] = balances[msg.sender].sub(_value);
+        balances[_to] = balances[_to].add(_value);
+        
+        // emit transfer event
+        Transfer(msg.sender, _to, _value);
+        return true;
+    }
 
-  /**
-   * make an approved transfer to another account from vault. This operation
-   * should be called after approved operation below.
-   * .e.g Alice allow Bob to spend 30 by doing:
-   *      Alice.approve(Bob, 30);                 // allow 30 to Bob
-   *
-   * and Bob can claim, say 10, from that by doing
-   *      Bob.transferFrom(Alice, Bob, 10);       // spend only 10
-   * and Bob's balance shall be 20 in the allowance.
-   */
-  /// Initiate a transfer of `_value` from `_from` to `_to`
-  function transferFrom(address _from, address _to, uint256 _value)         
-    public returns (bool success) 
-  {    
-    // sanity check
-    require(_to != 0x0 && _from != 0x0);
-    require(_from != _to && _to != address(this));
+    /**
+     * make an approved transfer to another account from vault. This operation
+     * should be called after approved operation below.
+     * .e.g Alice allow Bob to spend 30 by doing:
+     *      Alice.approve(Bob, 30);                 // allow 30 to Bob
+     *
+     * and Bob can claim, say 10, from that by doing
+     *      Bob.transferFrom(Alice, Bob, 10);       // spend only 10
+     * and Bob's balance shall be 20 in the allowance.
+     */
+    /// Initiate a transfer of `_value` from `_from` to `_to`
+    function transferFrom(address _from, address _to, uint256 _value)
+        public returns (bool success) 
+    {    
+        // sanity check
+        require(_to != 0x0 && _from != 0x0);
+        require(_from != _to && _to != address(this));
 
-    // check for overflows
-    // require(_value > 0 &&
-    //   balances[_from] >= _value &&
-    //   allowed[_from][_to] <= _value &&
-    //   balances[_to] + _value < balances[_to]);
+        // check for overflows
+        // require(_value > 0 &&
+        //   balances[_from] >= _value &&
+        //   allowed[_from][_to] <= _value &&
+        //   balances[_to] + _value < balances[_to]);
 
-    // update public balance
-    allowed[_from][_to] = allowed[_from][_to].sub(_value);        
-    balances[_from] = balances[_from].sub(_value);
-    balances[_to] = balances[_to].add(_value);
+        // update public balance
+        allowed[_from][_to] = allowed[_from][_to].sub(_value);
+        balances[_from] = balances[_from].sub(_value);
+        balances[_to] = balances[_to].add(_value);
 
-    // emit transfer event
-    Transfer(_from, _to, _value);
-    return true;
-  }
+        // emit transfer event
+        Transfer(_from, _to, _value);
+        return true;
+    }
 
-  /**
-   * This method is explained further in https://goo.gl/iaqxBa on the
-   * possible attacks. As such, we have to make sure the value is
-   * drained, before any Alice/Bob can approve each other to
-   * transfer on their behalf.
-   * @param _spender  - the recipient of the value
-   * @param _value    - the value allowed to be spent 
-   *
-   * This can be called by the token holder
-   * e.g. Alice can allow Bob to spend 30 on her behalf
-   *      Alice.approve(Bob, 30);     // gives 30 to Bob.
-   */
-  /// Approve `_spender` to claim/spend `_value`?
-  function approve(address _spender, uint256 _value)          
-    public returns (bool success) 
-  {
-    // sanity check
-    require(_spender != 0x0 && _spender != address(this));            
+    /**
+     * This method is explained further in https://goo.gl/iaqxBa on the
+     * possible attacks. As such, we have to make sure the value is
+     * drained, before any Alice/Bob can approve each other to
+     * transfer on their behalf.
+     * @param _spender  - the recipient of the value
+     * @param _value    - the value allowed to be spent 
+     *
+     * This can be called by the token holder
+     * e.g. Alice can allow Bob to spend 30 on her behalf
+     *      Alice.approve(Bob, 30);     // gives 30 to Bob.
+     */
+    /// Approve `_spender` to claim/spend `_value`?
+    function approve(address _spender, uint256 _value)
+        public returns (bool success) 
+    {
+        // sanity check
+        require(_spender != 0x0 && _spender != address(this));
 
-    // if the allowance isn't 0, it can only be updated to 0 to prevent 
-    // an allowance change immediately after withdrawal
-    require(allowed[msg.sender][_spender] == 0);
+        // if the allowance isn't 0, it can only be updated to 0 to prevent 
+        // an allowance change immediately after withdrawal
+        require(allowed[msg.sender][_spender] == 0);
 
-    allowed[msg.sender][_spender] = _value;
-    Approval(msg.sender, _spender, _value);
-    return true;
-  }
+        allowed[msg.sender][_spender] = _value;
+        Approval(msg.sender, _spender, _value);
+        return true;
+    }
 
-  /**
-   * Check the allowance that has been approved previously by owner.
-   */
-  /// check allowance approved from `_owner` to `_spender`?
-  function allowance(address _owner, address _spender)          
-    public constant returns (uint remaining) 
-  {
-    // sanity check
-    require(_spender != 0x0 && _owner != 0x0);
-    require(_owner != _spender && _spender != address(this));            
+    /**
+     * Check the allowance that has been approved previously by owner.
+     */
+    /// check allowance approved from `_owner` to `_spender`?
+    function allowance(address _owner, address _spender)
+        public constant returns (uint remaining) 
+    {
+        // sanity check
+        require(_spender != 0x0 && _owner != 0x0);
+        require(_owner != _spender && _spender != address(this));
 
-    // constant op. Just return the balance.
-    return allowed[_owner][_spender];
-  }
+        // constant op. Just return the balance.
+        return allowed[_owner][_spender];
+    }
 
 }

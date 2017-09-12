@@ -29,15 +29,15 @@ pragma solidity ^0.4.11;
  */
 contract Guarded {
 
-  modifier isValidAmount(uint256 _amount) { 
-    require(_amount > 0); 
-    _; 
-  }
+    modifier isValidAmount(uint256 _amount) { 
+        require(_amount > 0); 
+        _; 
+    }
 
-  // ensure address not null, and not this contract address
-  modifier isValidAddress(address _address) {
-    require(_address != 0x0 && _address != address(this));
-    _;
-  }
+    // ensure address not null, and not this contract address
+    modifier isValidAddress(address _address) {
+        require(_address != 0x0 && _address != address(this));
+        _;
+    }
 
 }
