@@ -73,9 +73,14 @@ contract FaradTokenSwap is Guarded, Ownable {
         wallet = _wallet;
     }
 
-    // @return true if crowdsale event has ended
+    // @return true if token swap event has ended
     function hasEnded() public constant returns (bool) {
         return block.number >= endBlock;
+    }
+
+    // @return true if the token swap contract is active.
+    function isActive() public constant returns (bool) {
+        return block.number >= startBlock && block.number <= endBlock;
     }
 
     function () payable {
