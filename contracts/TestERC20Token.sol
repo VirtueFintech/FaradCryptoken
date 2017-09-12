@@ -1,6 +1,7 @@
 /**
  * Copyright (C) Virtue Fintech FZ-LLC, Dubai
  * All rights reserved.
+ * Author: mhi@virtue.finance 
  *
  * MIT License
  *
@@ -33,7 +34,7 @@ import './ERC20Token.sol';
  *
  */
 contract TestERC20Token is ERC20Token {
-  
+
     function TestERC20Token(string _name, string _symbol, uint8 _decimals, uint256 _supply)
         ERC20Token(_name, _symbol, _decimals) 
     {

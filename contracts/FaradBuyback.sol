@@ -1,6 +1,7 @@
 /**
  * Copyright (C) Virtue Fintech FZ-LLC, Dubai
  * All rights reserved.
+ * Author: mhi@virtue.finance 
  *
  * MIT License
  *

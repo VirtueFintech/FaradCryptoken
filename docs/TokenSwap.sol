@@ -1,3 +1,31 @@
+/**
+ * Copyright (C) Virtue Fintech FZ-LLC, Dubai
+ * All rights reserved.
+ * Author: mhi@virtue.finance
+ *
+ * This code is adapted from OpenZeppelin Project.
+ * more at http://openzeppelin.org.
+ *
+ * MIT License
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy 
+ * of this software and associated documentation files (the ""Software""), to 
+ * deal in the Software without restriction, including without limitation the 
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or 
+ * sell copies of the Software, and to permit persons to whom the Software is 
+ * furnished to do so, subject to the following conditions: 
+ *  The above copyright notice and this permission notice shall be included in 
+ *  all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
+ * THE SOFTWARE.
+ *
+ */
 pragma solidity ^0.4.11;
 
 library SafeMath {
@@ -41,7 +69,7 @@ contract Ownable {
      * @dev Throws if called by any account other than the owner. 
      */
     modifier onlyOwner() {
-        requrie(msg.sender == owner);
+        require(msg.sender == owner);
         _;
     }
 
@@ -93,39 +121,48 @@ contract Guarded {
     }
 }
 
-contract FRDCrowdSale is Guarded, Ownable {
+contract FaradTokenSwap is Guarded, Ownable {
 
     using SafeMath for uint256;
 
     mapping(address => uint256) contributions;          // contributions from public
     uint256 contribCount = 0;
 
-    uint256 public DURATION = 14 days;                  // duration of crowdsale
+    string public version = '0.1.2';
 
-    string public version = '0.1.1';
+    uint256 public startBlock = 4274557;                // 15/09/2017 00:00:00 GMT, 1505433600
+    uint256 public endBlock = 4230637;                  // 30/09/2017 23:59:59 GMT, 1506815999
 
-    // uint256 public startBlock = 4243080;                // 07/08/2017 13:00:00, 1502110800
-    // uint256 public endBlock = 4307973;                  // 09/13/2017 23:59:59, 1505347199
-
-    uint256 public startBlock = 1381500;                // ropsten, Jul-27-2017 02:40:34 PM +UTC
-    uint256 public endBlock = 1419636;                  // 1 week after
-    uint256 public lastBlock = 0;
-
-    uint256 public totalEtherCap = 1000000 ether;       // Total raised for ICO
+    uint256 public totalEtherCap = 1184834 ether;       // Total raised for ICO, at USD 211/ether
     uint256 public weiRaised = 0;                       // wei raised in this ICO
-    uint256 public previousWeiRaised = 0;               // wei raised in the Pre-ICO
 
-    address public wallet = 0x25D28eC02B63D5216f2Dc2f63c53d17D95612Cf6;
+    address public wallet = 0x6067f3Fe6e565F515c2c43b84582e1aCC618c521;
 
     event Contribution(address indexed _contributor, uint256 _amount);
 
-    function FRDCrowdSale() {
+    function FaradTokenSwap() {
     }
 
-    // function to stop the CrowdSale 
-    /// stop the crowdsale at `_endBlock`
+    // function to start the Token Sale
+    /// start the token sale at `_starBlock`
+    function setStartBlock(uint256 _startBlock) onlyOwner public {
+        startBlock = _startBlock;
+    }
+
+    // function to stop the Token Swap 
+    /// stop the token swap at `_endBlock`
     function setEndBlock(uint256 _endBlock) onlyOwner public {
         endBlock = _endBlock;
+    }
+
+    // this function is to add the previous token sale balance.
+    function setWeiRaised(uint256 _weiRaised) onlyOwner public {
+        weiRaised = weiRaised.add(_weiRaised);
+    }
+
+    //
+    function setWallet(address _wallet) onlyOwner public {
+        wallet = _wallet;
     }
 
     // @return true if crowdsale event has ended
@@ -167,21 +204,14 @@ contract FRDCrowdSale is Guarded, Ownable {
         uint256 current = block.number;
 
         bool withinPeriod = current >= startBlock && current <= endBlock;
-        bool nonZeroPurchase = msg.value != 0;
+        bool minPurchase = msg.value >= 0.01 ether;
 
         // add total wei raised
-        uint256 totalWeiRaised = previousWeiRaised.add(weiRaised.add(msg.value));
+        uint256 totalWeiRaised = weiRaised.add(msg.value);
         bool withinCap = totalWeiRaised <= totalEtherCap;
 
-        if (!withinCap) {
-            if (lastBlock == 0) {
-                lastBlock = current;
-            }
-            // check only 2 conditions
-            return nonZeroPurchase && withinPeriod;
-        }
         // check all 3 conditions met
-        return withinPeriod && nonZeroPurchase && withinCap;
+        return withinPeriod && minPurchase && withinCap;
     }
 
     // send ether to the fund collection wallet
@@ -191,4 +221,5 @@ contract FRDCrowdSale is Guarded, Ownable {
     }
 
 }
+
 

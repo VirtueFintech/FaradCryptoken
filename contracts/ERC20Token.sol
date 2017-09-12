@@ -1,6 +1,7 @@
 /**
  * Copyright (C) Virtue Fintech FZ-LLC, Dubai
  * All rights reserved.
+ * Author: mhi@virtue.finance 
  *
  * This is adapted from ConsenSys
  * more at https://github.com/ConsenSys/Tokens
