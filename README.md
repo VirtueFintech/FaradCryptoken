@@ -1,15 +1,15 @@
 # FARAD Cryptoken
 
-## FRD Crowsale Contract
+# FRD Crowsale Contract
 
 ## Pre Token Swap
 Pre-Token Swap program which will be conducted in 3 batches over a maximum period of 36 days. The first batch starts  starting from 25th August 2017, 00:00 GMT till 15th September 2017, 23:59 GMT. The second batch starts from 16th September 2017, 00:00 till 22nd September 2017, 23:59 GMT. The third batch starts from 23rd September 2017, 00:00 GMT till 30th September 2017, 23:59 GMT.
 
-### Token Swap
+## Token Swap
 Token Swap program will be conducted in 3 batches over a maximum period of 31 days. The first batch starts  starting from 1st October 2017, 00:00 GMT till 7th October 2017, 23:59 GMT. The second batch starts from 8th October 2017, 00:00 GMT till 15th October 2017, 23:59 GMT. The third batch starts from 16th October 2017, 00:00 GMT till 31st October 2017, 23:59 GMT.
 
 
-### FARAD Token Sale Timeline
+## FARAD Token Sale Timeline
 
 This is the repository for FARAD Crowdsale contract with the following details:
 
