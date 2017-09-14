@@ -130,8 +130,8 @@ contract FaradTokenSwap is Guarded, Ownable {
 
     string public version = '0.1.2';
 
-    uint256 public startBlock = 4277437;                // 16th September 2017, 00:00:00 - 1505520000
-    uint256 public endBlock = 4297597;                  // 22nd September 2017, 23:59:59 - 1506124799
+    uint256 public startBlock = 4280263;                // 16th September 2017, 00:00:00 - 1505520000
+    uint256 public endBlock = 4305463;                  // 22nd September 2017, 23:59:59 - 1506124799
 
     uint256 public totalEtherCap = 1184834 ether;       // Total raised for ICO, at USD 211/ether
     uint256 public weiRaised = 0;                       // wei raised in this ICO
