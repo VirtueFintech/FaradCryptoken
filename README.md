@@ -1,5 +1,8 @@
 # FARAD Cryptoken
 
+This repository contains the `FARAD Cryptoken` smart contract Token Swap program.
+More information can be viewed at [FARAD Website](https://farad.energy)
+
 # FRD Crowsale Contract
 
 ## Pre Token Swap
