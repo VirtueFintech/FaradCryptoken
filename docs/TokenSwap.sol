@@ -135,8 +135,9 @@ contract FaradTokenSwap is Guarded, Ownable {
 
     uint256 public totalEtherCap = 1184834 ether;       // Total raised for ICO, at USD 211/ether
     uint256 public weiRaised = 0;                       // wei raised in this ICO
+    uint256 public minContrib = 0.05 ether;             // min contribution accepted
 
-    address public wallet = 0x6067f3Fe6e565F515c2c43b84582e1aCC618c521;
+    address public wallet = 0xa26Ea46ce8023eFF9eA611a9F09Ddf2Ef45c5bf8;
 
     event Contribution(address indexed _contributor, uint256 _amount);
 
@@ -156,13 +157,20 @@ contract FaradTokenSwap is Guarded, Ownable {
     }
 
     // this function is to add the previous token sale balance.
+    /// set the accumulated balance of `_weiRaised`
     function setWeiRaised(uint256 _weiRaised) onlyOwner public {
         weiRaised = weiRaised.add(_weiRaised);
     }
 
-    //
+    // set the wallet address
+    /// set the wallet at `_wallet`
     function setWallet(address _wallet) onlyOwner public {
         wallet = _wallet;
+    }
+
+    /// set the minimum contribution to `_minContrib`
+    function setMinContribution(uint256 _minContrib) onlyOwner public {
+        minContrib = _minContrib;
     }
 
     // @return true if token swap event has ended
@@ -209,7 +217,7 @@ contract FaradTokenSwap is Guarded, Ownable {
         uint256 current = block.number;
 
         bool withinPeriod = current >= startBlock && current <= endBlock;
-        bool minPurchase = msg.value >= 0.01 ether;
+        bool minPurchase = msg.value >= minContrib;
 
         // add total wei raised
         uint256 totalWeiRaised = weiRaised.add(msg.value);

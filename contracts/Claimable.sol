@@ -1,6 +1,7 @@
 /**
  * Copyright (C) Virtue Fintech FZ-LLC, Dubai
  * All rights reserved.
+ * Author: mhi@virtue.finance
  *
  * This code is adapted from OpenZeppelin Project.
  * more at http://openzeppelin.org.
