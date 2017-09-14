@@ -23,24 +23,29 @@
  * THE SOFTWARE.
  *
  */
+
+var Migrations = artifacts.require("./Migrations.sol"); 
 var SafeMath = artifacts.require("./SafeMath.sol");
+
 var Claimable = artifacts.require("./Claimable.sol");
+var Guarded = artifacts.require("./Guarded.sol");
+var Ownable = artifacts.require("./Ownable.sol");
+
 var ERC20 = artifacts.require("./ERC20.sol");
 var ERC20Token = artifacts.require("./ERC20Token.sol");
 var FaradTokenSwap = artifacts.require("./FaradTokenSwap.sol");
-var Guarded = artifacts.require("./Guarded.sol");
-var Migrations = artifacts.require("./Migrations.sol");
-var Ownable = artifacts.require("./Ownable.sol");
 
 module.exports = function(deployer) {
   deployer.deploy(SafeMath);
+
   deployer.deploy(Claimable);
+  deployer.deploy(Guarded);
+  deployer.deploy(Ownable);
+  
   deployer.deploy(ERC20);
   deployer.deploy(ERC20Token);
   deployer.deploy(FaradTokenSwap);
-  deployer.deploy(Guarded);
-  deployer.deploy(Migrations);
-  deployer.deploy(Ownable);
+  
   deployer.link(SafeMath, FaradTokenSwap);
   deployer.link(SafeMath, ERC20Token);
 };

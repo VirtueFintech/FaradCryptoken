@@ -30,7 +30,7 @@ pragma solidity ^0.4.11;
 
 // https://github.com/ethereum/EIPs/issues/20
 contract ERC20 {
-    
+
     /// total amount of tokens
     uint256 public totalSupply;
 

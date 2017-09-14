@@ -48,16 +48,4 @@ contract FaradCryptoken is ERC20Token, Guarded, Claimable {
         balances[msg.sender] = SUPPLY;
     }
 
-    /**
-     * this function is done on post ico.
-     * calculation is done off-chain
-     */
-    function transferToFRDHolder(address _recipient, uint256 _value) 
-        isValidAddress(_recipient)
-        isValidAmount(_value)
-        onlyOwner {
-
-        assert(transfer(_recipient, _value));
-    }
-
 }

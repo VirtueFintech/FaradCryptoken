@@ -45,7 +45,7 @@ contract FaradTokenSwap is Guarded, Ownable {
     uint256 public weiRaised = 0;                       // wei raised in this ICO
     uint256 public minContrib = 0.05 ether;             // min contribution accepted
 
-    address public wallet = 0xa26Ea46ce8023eFF9eA611a9F09Ddf2Ef45c5bf8;
+    address public wallet = 0xdDA27AC23Fc398d5e6B0108041fc334EDab3c183;
 
     event Contribution(address indexed _contributor, uint256 _amount);
 
