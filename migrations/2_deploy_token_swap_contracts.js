@@ -31,8 +31,8 @@ var Claimable = artifacts.require("./Claimable.sol");
 var Guarded = artifacts.require("./Guarded.sol");
 var Ownable = artifacts.require("./Ownable.sol");
 
-var ERC20 = artifacts.require("./ERC20.sol");
-var ERC20Token = artifacts.require("./ERC20Token.sol");
+// var ERC20 = artifacts.require("./ERC20.sol");
+// var ERC20Token = artifacts.require("./ERC20Token.sol");
 var FaradTokenSwap = artifacts.require("./FaradTokenSwap.sol");
 
 module.exports = function(deployer) {
@@ -42,10 +42,10 @@ module.exports = function(deployer) {
   deployer.deploy(Guarded);
   deployer.deploy(Ownable);
   
-  deployer.deploy(ERC20);
-  deployer.deploy(ERC20Token);
+  // deployer.deploy(ERC20);
+  // deployer.deploy(ERC20Token);
   deployer.deploy(FaradTokenSwap);
   
   deployer.link(SafeMath, FaradTokenSwap);
-  deployer.link(SafeMath, ERC20Token);
+  // deployer.link(SafeMath, ERC20Token);
 };
