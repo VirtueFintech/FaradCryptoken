@@ -30,27 +30,27 @@ pragma solidity ^0.4.11;
 
 library SafeMath {
     function mul(uint256 a, uint256 b) internal returns (uint256) {
-    uint256 c = a * b;
-    assert(a == 0 || c / a == b);
-    return c;
+        uint256 c = a * b;
+        assert(a == 0 || c / a == b);
+        return c;
     }
 
     function div(uint256 a, uint256 b) internal returns (uint256) {
-    // assert(b > 0); // Solidity automatically throws when dividing by 0
-    uint256 c = a / b;
-    // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-    return c;
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
+        uint256 c = a / b;
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+        return c;
     }
 
     function sub(uint256 a, uint256 b) internal returns (uint256) {
-    assert(b <= a);
-    return a - b;
+        assert(b <= a);
+        return a - b;
     }
 
     function add(uint256 a, uint256 b) internal returns (uint256) {
-    uint256 c = a + b;
-    assert(c >= a);
-    return c;
+        uint256 c = a + b;
+        assert(c >= a);
+        return c;
     }
 }
 
@@ -62,7 +62,7 @@ contract Ownable {
      * account.
      */
     function Ownable() {
-    owner = msg.sender;
+        owner = msg.sender;
     }
 
     /**
@@ -79,45 +79,45 @@ contract Ownable {
      * @param newOwner The address to transfer ownership to. 
      */
     function transferOwnership(address newOwner) onlyOwner {
-    if (newOwner != address(0)) {
-    owner = newOwner;
-    }
+        if (newOwner != address(0)) {
+            owner = newOwner;
+        }
     }
 }
 
 contract Guarded {
 
     modifier isValidAmount(uint256 _amount) { 
-    require(_amount > 0); 
-    _; 
+        require(_amount > 0); 
+        _; 
     }
 
     // ensure address not null, and not this contract address
     modifier isValidAddress(address _address) {
-    require(_address != 0x0 && _address != address(this));
-    _;
+        require(_address != 0x0 && _address != address(this));
+        _;
     }
 
     modifier isValidSymbol(string _symbol) {
-    require(bytes(_symbol).length <= 6);
-    _;
+        require(bytes(_symbol).length <= 6);
+        _;
     }
 
     // ensures that it's earlier than the given time
     modifier isBefore(uint256 _time) {
-    assert(now < _time);
-    _;
+        assert(now < _time);
+        _;
     }
 
     // ensures that the current time is between _startTime (inclusive) and _endTime (exclusive)
     modifier isInBetween(uint256 _startTime, uint256 _endTime) {
-    assert(now >= _startTime && now < _endTime);
-    _;
+        assert(now >= _startTime && now < _endTime);
+        _;
     }
 
     modifier isAfter(uint256 _time) {
-    assert(now > _time);
-    _;
+        assert(now > _time);
+        _;
     }
 }
 
