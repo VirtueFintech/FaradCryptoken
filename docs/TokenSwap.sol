@@ -71,9 +71,7 @@ contract Ownable {
             owner = newOwner;
         }
     }
-
 }
-
 
 /**
  * @title SafeMath
