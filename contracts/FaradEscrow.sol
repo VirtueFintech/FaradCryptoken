@@ -41,7 +41,7 @@ contract FaradEscrow is ERC20Token, Guarded, Claimable {
 	// total supply is thethered in US Dollar.
 	// to be issued by FARAD ltd. to Guangxi Aero-Beidou.
 	// 
-    uint256 public SUPPLY = 231249990 ether;   // in Dollar value.
+    uint256 public SUPPLY = 1600000000 ether;   // 1.6b ether;
 
     // our constructor, just supply the total supply.
     function FaradEscrow() 
